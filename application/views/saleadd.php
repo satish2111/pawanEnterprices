@@ -277,8 +277,9 @@ $(document).ready(function() {
                         var client = $('#client').val();
                         var NoofDay = $('#client1 [value="' + client + '"]').data(
                             'createdate');
-                        var today = new Date();
-                        var dd = today.getDate() + NoofDay;
+						var today = new Date($('#date').val());
+						today.setDate(today.getDate() + NoofDay);
+                        var dd = today.getDate() ;
                         var mm = today.getMonth() + 1; //January is 0!
                         var yyyy = today.getFullYear();
                         if (dd < 10) {
