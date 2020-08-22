@@ -3,6 +3,10 @@ $title='Bill Print';
 include('header.php');
             // echo "<pre>";
             // print_r($result);
+                if($result=='fail')
+                {
+        		    $this->session->set_flashdata('error', 'Somthing went worng. Error!!');
+                }
            $billno= $result[0]['Sale_id'];
            $Billdate= date('d-m-yy',strtotime($result[0]['Billdate']));
            $TotalAmt=$result[0]['TotalAmt'];
@@ -66,6 +70,14 @@ td {
 </style>
 
 <div class="container">
+    <!--- Success Message --->
+    <?php if ($this->session->flashdata('success')) { ?>
+    <p style="font-size: 20px; color:green"><?php echo $this->session->flashdata('success'); ?></p>
+    <?php }?>
+    <!---- Error Message ---->
+    <?php if ($this->session->flashdata('error')) { ?>
+    <p style="font-size: 20px; color:red"><?php echo $this->session->flashdata('error'); ?></p>
+    <?php } ?>
     <div class="main mt-5" id="print" style=' border: 1px solid #000;'>
         <div class="row">
             <div class="col-md-6 left" style='float: left;text-align: left;padding-left: 2rem;'>
@@ -80,7 +92,8 @@ td {
             <div class="col-lg-4" style='float: left;text-align:left;padding-left: 2rem;'>
                 <h3 style='font-size:1.2rem;'>PAWAN ENTERPRIESE</h3>
                 <address style='f'>
-                    Rosalie Complex A Wing 403 <br />Near ACP office Godrej Hill<br /> Kalyan West 421301
+                    Rosalie Complex A Wing 403 <br />Near ACP office Godrej Hill<br /> 
+                    Kalyan West 421301<br/>Mobile No. <b>9699115552</b>
                 </address>
             </div>
             <div class="col-lg-4" style='float: left;width: 34%;padding-left: 2rem;text-align:center'>

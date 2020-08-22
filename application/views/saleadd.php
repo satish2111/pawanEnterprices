@@ -608,7 +608,11 @@ $(document).ready(function() {
     });
 
     // final save with database end
-
+    $("#table1").on('click', '.remCF', function() 
+    {
+        tabelRowRemove(this);
+    });
+    
 
 
 
@@ -631,5 +635,45 @@ function calculate() {
 
         document.getElementById('gross').value = (parseFloat(grossbefore)).toFixed(2);
     }
+}
+
+
+function tabelRowRemove(p)
+{
+	var currow = $(p).closest('tr');
+	console.log(currow);
+	var tqty = currow.find('td:eq(2)').text();
+		var trate = currow.find('td:eq(3)').text();
+		var tgross = currow.find('td:eq(5)').text();
+
+
+		/*textbox value*/
+		var totalqty1 = document.getElementById("totalqty").innerHTML;
+		var totalgross1 = document.getElementById("totalgross").value;
+		/*end*/
+
+
+		var afterqty = 0,
+			aftergross = 0;
+		afterqty = parseInt(totalqty1, 10) - parseInt(tqty, 10);
+		aftergross = (parseFloat(totalgross1) - parseFloat(tgross)).toFixed(2);
+
+		if (isNaN(afterqty)) afterqty = 0;
+		document.getElementById("totalqty").innerHTML = afterqty;
+		document.getElementById("totalgross").value = aftergross;
+
+		var table = document.getElementById('table1');
+		if (rowcount == 1) {
+			document.getElementById("totalitem").innerHTML = 0;
+		}
+		$(p).parent().parent().remove();
+		var rowcount = table.rows.length;
+		rowcount--;
+		document.getElementById("totalitem").innerHTML = rowcount;
+		for (i = 0; i <= rowcount; i++) {
+			if (i != 0) {
+				document.getElementById('table1').rows[i].cells[0].innerHTML = i;
+			}
+		}
 }
 </script>

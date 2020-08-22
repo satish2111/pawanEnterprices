@@ -477,7 +477,6 @@ function validateNumber(event) {
 
 function tabelRowRemove(p)
 {
-	console.log('122');
 	var currow = $(p).closest('tr');
 	console.log(currow);
 	var tqty = currow.find('td:eq(2)').text();

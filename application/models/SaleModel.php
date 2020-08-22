@@ -28,7 +28,7 @@ class SaleModel extends CI_Model {
 	{
 		
 		$clientnamelist= $this->db->select('s.client_id,s.FirstName')->
-			from('tblmastersale p')
+			from('tblmastersale p')->DISTINCT('s.client_id,s.FirstName')
 				->join('tblclient s','p.client_id=s.client_id')
 				->get();
 			if($clientnamelist->num_rows()>0)
@@ -178,12 +178,20 @@ public function insert($saletable,$totalbill)
 			}
 		}
 		else{
-			print_r('no bill');
-			exit();
+			return fail;
+			
 		}
-
-		
 	}
+		public function reportprint($startdate, $enddate)
+		{
+			$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+
+			if(isset($clientReport))
+			{
+				$returnData = (object) ['status' => 'success','clientreport'=>$clientReport];
+			}
+			return $returnData;
+			//return $clientReport ;
+		}
+	
 }
-
-

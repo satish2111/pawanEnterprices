@@ -144,4 +144,31 @@ class Sale extends CI_Controller {
             $result=$this->sale->billprint($billno);
             $this->load->view('billprint',['result'=>$result]);
     }
+    public function report()
+    {
+        
+        if(!$this->session->userdata('logged_in'))
+            {
+                 $this->session->set_flashdata('msg', 'Username / Password Invalid');
+                redirect(base_url().'login');  
+            }
+      
+        $this->load->view('report');
+    }
+
+    public function reportdata()
+    {
+        if(!$this->session->userdata('logged_in'))
+
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+           redirect(base_url().'login');  
+       }
+       $startdate=$this->input->post('startdate');
+       $enddate=$this->input->post('enddate');
+       $returnData=$this->sale->reportprint($startdate, $enddate);
+
+       $this->output->set_content_type('application/json');
+        echo json_encode($returnData); 
+    }
 }

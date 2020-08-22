@@ -19,7 +19,7 @@ date_default_timezone_set('Asia/Calcutta'); ?>
 					</li>
 					<li><a class='' href='<?php echo base_url().'Purchase' ?>'>Purchase</a>
 					<li><a class='' href='<?php echo base_url().'sale' ?>'>Sale</a>
-					<li><a class='' href='<?php echo base_url().'report' ?>'>report</a>
+					<li><a class='' href='<?php echo base_url().'sale/report' ?>'>report</a>
 				</ul>
 				<span class="navbar-text">
 					<label style="color:#fff; font-size:1em; margin-right:20px;">Hello. <?php echo $this->session->name; ?></label>
