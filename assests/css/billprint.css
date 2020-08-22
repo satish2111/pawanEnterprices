@@ -1,0 +1,20 @@
+.main {
+    border: 1px solid #000;
+}
+
+.left {
+    float: left;
+    text-align: left;
+    padding-left: 2rem;
+}
+
+.right {
+    float: right;
+    text-align: right;
+    padding-right: 2rem;
+}
+
+td {
+    line-height: 1.8;
+    border-top: solid 1px #000;
+}

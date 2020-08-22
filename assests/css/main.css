@@ -1,0 +1,76 @@
+.btndelete {
+    background-color: transparent;
+    border: unset;
+    color: red;
+}
+
+button:focus {
+    outline: none;
+}
+
+.star {
+    color: red;
+    font-size: 1.3rem;
+}
+
+.col-md-4 {
+    margin-bottom: 0.8rem;
+}
+
+.pageloader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: url('images/loader.gif') 50% 50% no-repeat rgb(249, 249, 249);
+    opacity: .8;
+}
+
+#btnsave,
+#canel {
+    margin-right: 2rem;
+    padding: 0.3rem 2rem;
+}
+
+#reset {
+    padding: 0.3rem 2rem;
+}
+
+hr {
+    border-top: 1px solid rgb(0 0 0 / 57%);
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+}
+
+.scrollbar {
+    margin-left: 30px;
+    float: left;
+    height: 200px;
+    width: 5px;
+    background: #F5F5F5;
+    overflow-y: scroll;
+    margin-bottom: 25px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #cccccc;
+}

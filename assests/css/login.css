@@ -1,0 +1,17 @@
+.btn-normal:hover{
+	border:1px solid #000;
+	border-radius: 15px;
+	
+}
+span>a:hover{
+	color: #0077b5!important;
+	text-decoration-line: underline!important;
+}
+.field-icon {
+    float: right;
+    margin-right: 8px;
+    margin-top: -27px;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+}
