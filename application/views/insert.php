@@ -20,8 +20,8 @@ include('header.php'); ?>
 			<?php echo form_input(['name'=>'lastname','class'=>'form-control','placeholder'=>'Last Name','required'=>'required','value'=>set_value('lastname')]);?>
 			<?php echo form_error('lastname',"<div style='color:red'>","</div>");?>
 		</div>
-		<div class="col-md-4"><b>Email id <sup class="star">*</sup></b>
-			<?php echo form_input(['name'=>'emailid','class'=>'form-control','placeholder'=>'Email id','required'=>'required','value'=>set_value('emailid')]);?>
+		<div class="col-md-4"><b>Email id </b>
+			<?php echo form_input(['name'=>'emailid','class'=>'form-control','placeholder'=>'Email id','value'=>set_value('emailid')]);?>
 			<?php echo form_error('emailid',"<div style='color:red'>","</div>");?>
 		</div>
 	</div>

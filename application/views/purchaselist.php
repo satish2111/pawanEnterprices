@@ -140,16 +140,28 @@ function dlefunction(id){
 			mothod:"POST",
 			success:function(data)
 			{
-				Swal.fire({
-				title: 'Deleted!',
-				text: "Your file has been deleted.",
-				icon: 'success',
-				timer: 2000,
-				timerProgressBar: true,
-				})
-			.then(() => {
-			location.reload();
-			})
+				if (data.status == "success")
+				{
+					Swal.fire({
+					title: 'Deleted!',
+					text: "Your file has been deleted.",
+					icon: 'success',
+					timer: 2000,
+					timerProgressBar: true,
+					}).then(() => {
+						location.reload();})
+				}
+				else if(data.status == "sales")
+				{
+					Swal.fire({
+					title: 'Error!',
+					text: "your can't delete that bill because sum products are saled.",
+					icon: 'error',
+					timer: 6000,
+					timerProgressBar: true,
+					})
+				}
+			
 			}
 			});
 		}

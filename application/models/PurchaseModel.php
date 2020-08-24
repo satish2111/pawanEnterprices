@@ -116,7 +116,12 @@ class PurchaseModel extends CI_Model {
 
 	function delete($id)
 	{
-
+$checkstatus=$this->db->select('Pur_fk_Id')->where('Status','S')->where('Pur_fk_Id',$id)->get('tblpurchase');
+if($checkstatus->num_rows()>0)
+{
+	return 'sales';
+}
+else{
 		$sql_query=$this->db->where('Pur_fk_Id', $id)
 		                ->delete('tblpurchase'); 
 		           if($sql_query)
@@ -133,6 +138,7 @@ class PurchaseModel extends CI_Model {
 					$this->session->set_flashdata('error', 'Somthing went worng. Error!!');
 				 	return 'failed';
 				}
+			}
 	}
 
 	function checkuser($supplername)

@@ -47,13 +47,17 @@ public function clientlist()
 			return $clientdata->result();
 		}
 }
-public function productlist()
+public function productDatalist()
 {
-	$productnamelist= $this->db->select('DISTINCT(ProductName),SUM(Qty)as Qty,MRP')->where('Status','A')->from('tblpurchase')->group_by('ProductName')->get();
+	$productnamelist= $this->db->select('DISTINCT(ProductName),SUM(Qty)as Qty,MRP')->where('Status','A')->from('tblpurchase')->group_by('ProductName,MRP')->get();
+
 		if($productnamelist->num_rows()>0)
 		{
-			
 			return $productnamelist->result();
+		}
+		else{
+			$this->session->set_flashdata('error', 'No Qty Aavailable For Sale<br/> Please Add Purchase First!!!!');
+
 		}
 }
 public function checkuser($clientname)

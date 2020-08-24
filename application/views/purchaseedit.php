@@ -135,7 +135,7 @@ color: currentColor;
 					<label for="mrp"><b>Gross</b></label>
 				</div>
 				<div class="col-md-8">
-					<input type="text" name="txtgross" value="" id='gross' placeholder="Gross" class="form-control" readonly>
+					<input type="text" name="txtgross" value="" id='gross' tabindex='-1' placeholder="Gross" class="form-control" readonly>
 				</div>
 			</div>
 		</div>

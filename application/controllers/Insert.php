@@ -28,7 +28,10 @@ public function InsertTblusers()
 	}
 	$this->form_validation->set_rules('firstname','First Name','required|alpha');	
 	$this->form_validation->set_rules('lastname','Last Name','required|alpha');	
-	$this->form_validation->set_rules('emailid','Email id','required|valid_email');
+	if($this->input->post('emailid')!=null)
+	{
+		$this->form_validation->set_rules('emailid','Email id','valid_email');
+	}
 	$this->form_validation->set_rules('contactno','Contact Number','required|numeric|exact_length[10]');
 	$this->form_validation->set_rules('creditdays','Credit days','required|numeric|min_length[1]|max_length[2]');
 	$this->form_validation->set_rules('address','Address','required');	
