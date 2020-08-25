@@ -12,8 +12,8 @@ class Suppler extends CI_Controller{
 			$this->load->model('Read_Model');
 			
 			$config['base_url'] = base_url('read/userdata');        
-			$config['total_rows'] = $this->Read_Model->num_row('tblsuppler');      
-			$config['per_page'] = 5;               
+			$config['total_rows'] = $this->Read_Model->num_row('suppler/index');      
+			$config['per_page'] = 10;               
 			$config['full_tag_open'] = '<ul class="pagination">';        
 			$config['full_tag_close'] = '</ul>';  
 			$config['attributes'] = array('class' => 'page-link');   

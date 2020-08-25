@@ -199,6 +199,6 @@ include('header.php'); ?>
 <script src="<?php echo base_url('assests/js/purchaseAdd.js'); ?>"></script>
 <script type="text/javascript">
 	function dateclick() {
-	document.getElementById("date").innerHTML = new Date();
+	document.getElementById("date").innerHTML = new Date().toISOString().substr(0, 10);
 }
 </script>

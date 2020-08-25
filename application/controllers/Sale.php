@@ -17,9 +17,9 @@ class Sale extends CI_Controller {
 	            redirect(base_url().'login');  
 	    	}
             $this->load->model('Read_Model');
-            $config['base_url'] = base_url('salelist');        
+            $config['base_url'] = base_url('sale/index');        
             $config['total_rows'] = $this->Read_Model->num_row('tblmastersale');      
-            $config['per_page'] = 5;               
+            $config['per_page'] = 10;               
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
             $config['attributes'] = array('class' => 'page-link');   
@@ -40,6 +40,7 @@ class Sale extends CI_Controller {
             $config['num_tag_open'] = '<li>';
             $config['num_tag_close'] = '</li>';
             $this->pagination->initialize($config);
+           
             $result=$this->sale->getdata($config['per_page'],$this->uri->segment(3));
             if(isset($_SESSION['error'])){
                     unset($_SESSION['error']);
@@ -55,7 +56,7 @@ class Sale extends CI_Controller {
                 redirect(base_url().'login');  
             }
              $this->load->model('Read_Model');
-            $config['base_url'] = base_url('salelist');        
+            $config['base_url'] = base_url('sale/index');        
             $config['total_rows'] = $this->Read_Model->num_row('tblmastersale');      
             $config['per_page'] = 5;               
             $config['full_tag_open'] = '<ul class="pagination">';        
@@ -162,13 +163,66 @@ class Sale extends CI_Controller {
 
         {
             $this->session->set_flashdata('msg', 'Username / Password Invalid');
-           redirect(base_url().'login');  
-       }
+            redirect(base_url().'login');  
+        }
        $startdate=$this->input->post('startdate');
        $enddate=$this->input->post('enddate');
        $returnData=$this->sale->reportprint($startdate, $enddate);
 
        $this->output->set_content_type('application/json');
         echo json_encode($returnData); 
+    }
+    public function getmaxbillno()
+    {
+        if(!$this->session->userdata('logged_in'))
+            {
+                 $this->session->set_flashdata('msg', 'Username / Password Invalid');
+                redirect(base_url().'login');  
+            }
+            $clientID= $this->input->post('clientID');
+            $billno=$this->sale->getlastbillno($clientID);
+            $this->output->set_content_type('application/json');
+            echo json_encode($billno);  
+
+
+    }
+    public function getdetails($billno)
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+             $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+    $result=$this->sale->editdate($billno);
+    $this->load->view('saleedit',['result'=>$result]);
+    }
+
+    public function editPurchasedelete()
+    {
+           if(!$this->session->userdata('logged_in'))
+            {
+                 $this->session->set_flashdata('msg', 'Username / Password Invalid');
+                redirect(base_url().'login');  
+            }
+            $totalbill=$this->input->post('totalbill');
+
+            $status= $this->sale->editPurchasedelete($totalbill);
+            $this->output->set_content_type('application/json');
+            echo json_encode(array('status'  => $status)); 
+    }
+
+    public function saleedit()
+    {
+            if(!$this->session->userdata('logged_in'))
+            {
+                $this->session->set_flashdata('msg', 'Username / Password Invalid');
+                redirect(base_url().'login');  
+            }
+            $saletable= $this->input->post('saletable');
+            $totalbill=$this->input->post('totalbill');
+
+            $status= $this->sale->billEdit($saletable,$totalbill);
+            $this->output->set_content_type('application/json');
+            echo json_encode(array('status'  => $status));
     }
 }

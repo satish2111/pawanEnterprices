@@ -1,133 +1,152 @@
-html{height: 100%; overflow-x: hidden;}
-body{overflow-x: hidden; min-height: 100%; padding: 0; margin: 0; position: relative;}
-body::after{ content:''; display:block; height:100px; }
+html {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+body::after {
+    content: '';
+    display: block;
+    height: 100px;
+}
+
 #menu {
-  background: #447fba;
-  color: #eee;
-  height: 35px;
+    background: #447fba;
+    color: #eee;
+    height: 35px;
 }
 
 #menu ul,
 #menu li {
-  margin: 0 0;
-  padding: 0 0;
-  list-style: none
+    margin: 0 0;
+    padding: 0 0;
+    list-style: none
 }
 
 #menu ul {
-  height: 35px
+    height: 35px
 }
 
 #menu li {
-  float: right;
-  right: 0;
-  display: inline;
-  position: relative;
-  font: bold 12px Arial;
-  text-transform: uppercase
+    float: right;
+    right: 0;
+    display: inline;
+    position: relative;
+    font: bold 12px Arial;
+    text-transform: uppercase
 }
 
 #menu li:first-child {
-  border-left: none
+    border-left: none
 }
 
 #menu a {
-  display: block;
-  line-height: 35px;
-  padding: 0 14px;
-  text-decoration: none;
-  color: #eee;
+    display: block;
+    line-height: 35px;
+    padding: 0 14px;
+    text-decoration: none;
+    color: #eee;
 }
 
-#menu li:hover > a,
+#menu li:hover>a,
+#menu li:active>a,
 #menu li a:hover {
-  background: #447fba
+    background: #8CB0D5;
+    border-radius: 15px;
 }
 
 #menu input {
-  display: none;
-  margin: 0 0;
-  padding: 0 0;
-  width: 80px;
-  height: 35px;
-  opacity: 0;
-  cursor: pointer
+    display: none;
+    margin: 0 0;
+    padding: 0 0;
+    width: 80px;
+    height: 35px;
+    opacity: 0;
+    cursor: pointer
 }
 
 #menu label {
-  font: bold 30px Arial;
-  display: none;
-  width: 35px;
-  height: 36px;
-  line-height: 36px;
-  text-align: center
+    font: bold 30px Arial;
+    display: none;
+    width: 35px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center
 }
 
 #menu label span {
-  font-size: 12px;
-  position: absolute;
-  left: 35px
+    font-size: 12px;
+    position: absolute;
+    left: 35px
 }
 
 #menu ul.menus {
-  height: auto;
-  width: 180px;
-  background: #447fba;
-  position: absolute;
-  z-index: 99;
-  display: none;
-  border: 0;
+    height: auto;
+    width: 180px;
+    background: #447fba;
+    position: absolute;
+    z-index: 99;
+    display: none;
+    border: 0;
+    padding-top: 10px;
 }
 
 #menu ul.menus li {
-  display: block;
-  width: 100%;
-  font: 12px Arial;
-  text-transform: none;
+    display: block;
+    width: 100%;
+    font: 12px Arial;
+    text-transform: none;
 }
 
 #menu li:hover ul.menus {
-  display: block
+    display: block
 }
 
-
-
 #menu a.prett {
-  padding: 0 27px 0 14px
+    padding: 0 27px 0 14px
 }
 
 #menu a.prett::after {
-  content: "";
-  width: 0;
-  height: 0;
-  border-width: 6px 5px;
-  border-style: solid;
-  border-color: #eee transparent transparent transparent;
-  position: absolute;
-  top: 15px;
-  right: 9px
+    content: "";
+    width: 0;
+    height: 0;
+    border-width: 6px 5px;
+    border-style: solid;
+    border-color: #eee transparent transparent transparent;
+    position: absolute;
+    top: 15px;
+    right: 9px
 }
 
 #menu ul.menus a:hover {
-  background: #024283;
+    background: #8CB0D5;
+    font-weight: 800;
 }
 
 #menu ul.menus .submenu {
-  display: none;
-  position: absolute;
-  left: 180px;
-  background: #447fba;
-  top: 0;
-  width: 180px;
+    display: none;
+    position: absolute;
+    left: 180px;
+    background: #447fba;
+    top: 0;
+    width: 180px;
 }
 
 #menu ul.menus .submenu li {
-  background: #447fba;
+    background: #447fba;
 }
 
 #menu ul.menus .has-submenu:hover .submenu {
-  display: block;
+    display: block;
 }
+
 .bg-light {
     background-color: #447fba!important;
     position: relative;
@@ -135,15 +154,20 @@ body::after{ content:''; display:block; height:100px; }
     width: 100%;
     border-radius: 15px;
 }
-.bottommargin{ margin-bottom: 2%;}
 
-.topmargin{margin-top: 1%;}
-.footer {
-  position:absolute;
-  bottom: 0;
-  width: 100%;
-  background-color: #447fba;
-  color: white;
-  text-align: center;
+.bottommargin {
+    margin-bottom: 2%;
 }
 
+.topmargin {
+    margin-top: 1%;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #447fba;
+    color: white;
+    text-align: center;
+}

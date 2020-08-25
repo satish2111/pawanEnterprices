@@ -21,9 +21,9 @@ class Dashboard extends CI_Controller {
 	    	}
 
              $this->load->model('Read_Model');
-            $config['base_url'] = base_url('purchaselist');        
+            $config['base_url'] = base_url('dashboard/index');        
             $config['total_rows'] = $this->Read_Model->num_row('tblmasterpurchase');      
-            $config['per_page'] = 5;               
+            $config['per_page'] = 10;               
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
             $config['attributes'] = array('class' => 'page-link');   

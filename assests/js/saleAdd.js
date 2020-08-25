@@ -1,24 +1,8 @@
 $(document).ready(function() {
-    $('#date').val(new Date().toISOString().substr(0, 10));
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1; //January is 0!
-    var yyyy = today.getFullYear();
-    if (dd < 10) {
-        dd = '0' + dd
-    }
-    if (mm < 10) {
-        mm = '0' + mm
-    }
-    today = yyyy + '-' + mm + '-' + dd;
-    document.getElementById("date").setAttribute("max", today);
     var id = 1;
-    document.getElementById("Duedate").value = today;
-
-
-    function dateclick() {
-        document.getElementById("date").innerHTML = new Date();
-    }
+    // function dateclick() {
+    //     document.getElementById("date").innerHTML = new Date();
+    // }
     var UserId = document.getElementById("session").value;
 
     //client vaild from backend start//
@@ -230,16 +214,33 @@ $(document).ready(function() {
             }
             var newid = rowcount;
             //console.log(newid);
-            $("#table1 tbody").append('<tr id="' + newid + '">\n\<td>' + newid +
-                '</td>\n\<td class="productname' + newid + '">' + $("#productname").val() +
-                '</td>\n\<td class="quantity' + newid + '">' + $("#quantity").val() +
-                '</td>\n\<td class="free' + newid + '">' + $("#free").val() +
-                '</td>\n\<td class="mrp(dp)' + newid + '">' + $("#mrp").val() +
-                '</td>\n\<td class="Gross' + newid + '">' + $("#gross").val() +
-                '</td>\n\<td ><a href="javascript:void(0);" class="remCF">Remove</a></td>\'</tr>');
-
+            var url = window.location.pathname;
+            var test = url.split("/");
+            var currow = $(this).closest('tr');
+            if (test[4] != 'getdetails') {
+                $("#table1 tbody").append('<tr id="' + newid + '">\n\<td>' + newid +
+                    '</td>\n\<td class="productname' + newid + '">' + $("#productname").val() +
+                    '</td>\n\<td class="quantity' + newid + '">' + $("#quantity").val() +
+                    '</td>\n\<td class="free' + newid + '">' + $("#free").val() +
+                    '</td>\n\<td class="mrp(dp)' + newid + '">' + $("#mrp").val() +
+                    '</td>\n\<td class="Gross' + newid + '">' + $("#gross").val() +
+                    '</td>\n\<td ><a href="javascript:void(0);" class="remCF"><span class="fas fa-trash"> Remove</a></td>\'</tr>');
+            } else if (test[4] == 'getdetails') {
+                var newsrno = 1;
+                $("#table1 tbody").append('<tr id="' + newid + '">\n\<td>' + newid +
+                    '</td>\n\<td class="productname' + newid + '">' + $("#productname").val() +
+                    '</td>\n\<td class="quantity' + newid + '">' + $("#quantity").val() +
+                    '</td>\n\<td class="free' + newid + '">' + $("#free").val() +
+                    '</td>\n\<td class="mrp(dp)' + newid + '">' + $("#mrp").val() +
+                    '</td>\n\<td class="Gross' + newid + '">' + $("#gross").val() +
+                    '</td>\n\<td ><a href="javascript:void(0);" class="remCF"><span class="fas fa-trash"> Remove</a></td><td class="newsrno' + newid + '" style="display:none">' + newsrno + '</td\'</tr>');
+            }
             var tempqty = document.getElementById("quantity").value;
             var tempgross = document.getElementById("gross").value;
+            var tempfree = document.getElementById("free").value;
+            if (tempfree != '') {
+                tempqty = parseInt(tempfree) + parseInt(tempqty);
+            }
 
             var totalqty1 = document.getElementById("totalqty").innerHTML;
             var totalgross1 = document.getElementById("totalgross").value;
@@ -284,6 +285,9 @@ $(document).ready(function() {
 
     // final save with database
     $('#done').click(function() {
+        var url = window.location.pathname;
+        var test = url.split("/");
+
         var table = document.getElementById('table1');
         var rowcount = table.rows.length;
         var item = document.getElementById("totalitem").innerHTML;
@@ -296,9 +300,9 @@ $(document).ready(function() {
             });
             var client = $('#client').val();
             var clientID = $('#client1 [value="' + client + '"]').data('value');
-            //console.log(clientID);
             var saletable = [];
             var totalbill = [];
+
 
             var billwisetotal = {
                 'BillDate': document.getElementById('date').value,
@@ -306,78 +310,205 @@ $(document).ready(function() {
                 'TotalAmt': document.getElementById('totalgross').value,
                 'createdate': document.getElementById('Duedate').value,
                 'AddBy': UserId,
-                //'BillNo': document.getElementById('billno').value,
-
-                // 'Pur_Id': document.getElementById('PurId') === null ? 0 : document.getElementById('PurId').value,
             }
             totalbill.push(billwisetotal);
             $('#table1 tr').each(function(row, tr) {
                 if ($(tr).find('td:eq(0)').text() == "") {
 
                 } else {
-                    var sub = {
-                        'ProductName': $(tr).find('td:eq(1)').text(),
-                        'Qty': $(tr).find('td:eq(2)').text(),
-                        'Free': $(tr).find('td:eq(3)').text(),
-                        'mrp': $(tr).find('td:eq(4)').text(),
-                        'productwisegross': $(tr).find('td:eq(5)').text(),
+                    if (test[4] != 'getdetails') {
+                        var sub = {
+                            'ProductName': $(tr).find('td:eq(1)').text(),
+                            'Qty': $(tr).find('td:eq(2)').text(),
+                            'Free': $(tr).find('td:eq(3)').text(),
+                            'mrp': $(tr).find('td:eq(4)').text(),
+                            'productwisegross': $(tr).find('td:eq(5)').text(),
+                        }
+
+                    } else if (test[4] == 'getdetails') {
+                        var sub = {
+                            'ProductName': $(tr).find('td:eq(1)').text(),
+                            'Qty': $(tr).find('td:eq(2)').text(),
+                            'Free': $(tr).find('td:eq(3)').text(),
+                            'mrp': $(tr).find('td:eq(4)').text(),
+                            'productwisegross': $(tr).find('td:eq(5)').text(),
+                            'newsrno': $(tr).find('td:eq(7)').text(),
+                            'Fk_Sale_id': test[5],
+                        }
                     }
                     saletable.push(sub);
-                }
-                Swal.fire({
-                        title: 'Are You sure',
-                        text: 'To Save The Bill ?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, Save it!'
-                    })
-                    .then((result) => {
-                        if (result.value) {
-                            var data = {
-                                'saletable': saletable,
-                                'totalbill': totalbill
-                            };
-                            //console.log(data);
-                            document.getElementById("pageloader").style.display = "block";
-                            $.ajax({
-                                data: data,
-                                type: "POST",
-                                url: "/pawanenterprises/index.php/sale/addsale",
-                                crossOrigin: false,
-                                dataType: 'json',
-                                success: function(result) {
-                                    $(".pageloader").fadeOut("slow");
-                                    if (result.status == "success") {
-                                        Swal.fire({
-                                                title: 'Successfully Saved',
-                                                text: 'Redirecting...',
-                                                icon: 'success',
-                                                timer: 2000,
-                                                timerProgressBar: true,
-                                                buttons: false,
+                    Swal.fire({
+                            title: 'Are You sure',
+                            text: 'To Save The Bill ?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, Save it!'
+                        })
+                        .then((result) => {
+                            if (result.value) {
+                                var data = {
+                                    'saletable': saletable,
+                                    'totalbill': totalbill
+                                };
+                                document.getElementById("pageloader").style.display = "block";
+                                var urlforpost = test[4] != 'getdetails' ? '/pawanenterprises/index.php/sale/addsale' : '/pawanenterprises/index.php/sale/saleedit';
+                                $.ajax({
+                                    data: data,
+                                    type: "POST",
+                                    url: urlforpost,
+                                    crossOrigin: false,
+                                    dataType: 'json',
+                                    success: function(result) {
+                                        $(".pageloader").fadeOut("slow");
+                                        if (result.status == "success") {
+                                            var client = {
+                                                'clientID': clientID
+                                            };
+                                            $.ajax({
+                                                data: client,
+                                                type: "POST",
+                                                url: "/pawanenterprises/index.php/sale/getmaxbillno",
+                                                crossOrigin: false,
+                                                dataType: 'json',
+                                                success: function(result) {
+                                                    var successMgs = 'Bill No is ' + result.Billdetail.Billno +
+                                                        '\nClient Name is ' + result.Billdetail.Name;
+                                                    Swal.fire({
+                                                            title: 'Successfully Saved',
+                                                            text: successMgs,
+                                                            icon: 'success',
+                                                            timer: 21000,
+                                                            timerProgressBar: true,
+                                                            buttons: false,
+                                                        })
+                                                        .then(() => {
+                                                            location.href =
+                                                                "/pawanenterprises/index.php/sale/index";
+                                                        })
+                                                }
                                             })
-                                            .then(() => {
-                                                location.href =
-                                                    "/pawanenterprises/index.php/sale/index";
+                                        } else if (result.status == "success-only-Read") {
+                                            var client = {
+                                                'clientID': clientID
+                                            };
+                                            $.ajax({
+                                                data: client,
+                                                type: "POST",
+                                                url: "/pawanenterprises/index.php/sale/getmaxbillno",
+                                                crossOrigin: false,
+                                                dataType: 'json',
+                                                success: function(result) {
+                                                    var successMgs = 'Bill No is ' + result.Billdetail.Billno +
+                                                        '\nClient Name is ' + result.Billdetail.Name;
+                                                    Swal.fire({
+                                                            title: 'Successfully Edit',
+                                                            text: successMgs,
+                                                            icon: 'success',
+                                                            timer: 21000,
+                                                            timerProgressBar: true,
+                                                            buttons: false,
+                                                        })
+                                                        .then(() => {
+                                                            location.href =
+                                                                "/pawanenterprises/index.php/sale/index";
+                                                        })
+                                                }
                                             })
-                                    } else {
-                                        Swal.fire('Warning', 'Error Saving',
-                                            'warning', 2000);
+                                        } else {
+                                            Swal.fire('Warning', 'Error Saving',
+                                                'warning', 2000);
+                                        }
                                     }
-                                }
-                            });
-                        }
-                    })
-            })
+                                });
 
+
+                            }
+                        })
+                }
+            });
         }
     });
 
     // final save with database end
     $("#table1").on('click', '.remCF', function() {
-        tabelRowRemove(this);
+        var self = this;
+        var url = window.location.pathname;
+        var test = url.split("/");
+        var currow = $(this).closest('tr');
+        if (test[4] == 'getdetails') {
+            var newsrnoget = currow.find('td:eq(7)').text();
+            if (newsrnoget && newsrnoget != '') {
+                tabelRowRemove(this);
+                return;
+            }
+            $("#client option").each(function(i, el) {
+                data[$(el).data("value")] = $(el).val();
+            });
+            var client = $('#client').val();
+            var NoofDay = $('#client1 [value="' + client + '"]').data(
+                'createdate');
+            var totalbill = [];
+            var updatedforgross = (currow.find('td:eq(5)').text());
+            var forUpdatetotalGorss = document.getElementById("totalgross").value;
+            var finalgross = (parseFloat(forUpdatetotalGorss) - parseFloat(updatedforgross)).toFixed(2);
+
+            var details = {
+                'SaleBillNo': test[5],
+                'ProductName': currow.find('td:eq(1)').text(),
+                'Qty': currow.find('td:eq(2)').text(),
+                'free': currow.find('td:eq(3)').text(),
+                'gross': finalgross,
+                'AddBy': UserId,
+            }
+            totalbill.push(details);
+            Swal.fire({
+                title: 'Are You sure',
+                text: 'Delete From The Bill ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Save it!'
+            }).then((result) => {
+                if (result.value) {
+                    var data = {
+                        'totalbill': totalbill
+                    };
+                    document.getElementById("pageloader").style.display = "block";
+                    $.ajax({
+                        data: data,
+                        type: "POST",
+                        url: "/pawanenterprises/index.php/sale/editPurchasedelete",
+                        crossOrigin: false,
+                        dataType: 'json',
+                        success: function(result) {
+                            $(".pageloader").fadeOut("slow");
+                            if (result.status == "success-full") {
+                                Swal.fire({
+                                        title: 'Data Is Successfully Delete',
+                                        text: 'Redirecting...',
+                                        icon: 'success',
+                                        timer: 2000,
+                                        timerProgressBar: true,
+                                        buttons: false,
+                                    })
+                                    .then(function() {
+                                        tabelRowRemove(self);
+                                        //location.href = "/pawanenterprises/index.php/purchase/index";
+                                    })
+                            } else {
+                                Swal.fire('Warning', 'Error Saving', 'warning');
+                            }
+                        }
+                    });
+
+                }
+            });
+        } else if (test[4] != 'getdetails') {
+            tabelRowRemove(this);
+        }
     });
 })
 
@@ -400,11 +531,9 @@ function calculate() {
 
 function tabelRowRemove(p) {
     var currow = $(p).closest('tr');
-    console.log(currow);
     var tqty = currow.find('td:eq(2)').text();
-    var trate = currow.find('td:eq(3)').text();
+    var tfree = currow.find('td:eq(3)').text();
     var tgross = currow.find('td:eq(5)').text();
-
 
     /*textbox value*/
     var totalqty1 = document.getElementById("totalqty").innerHTML;
@@ -414,6 +543,10 @@ function tabelRowRemove(p) {
 
     var afterqty = 0,
         aftergross = 0;
+
+    if (tfree != '') {
+        tqty = parseInt(tqty, 10) + parseInt(tfree, 10);
+    }
     afterqty = parseInt(totalqty1, 10) - parseInt(tqty, 10);
     aftergross = (parseFloat(totalgross1) - parseFloat(tgross)).toFixed(2);
 

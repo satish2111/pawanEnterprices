@@ -181,11 +181,11 @@ include('header.php'); ?>
         <div class="col-md-3 align-items-center">
             <div class="form-group row ">
                 <div class="col-md-4">
-                    <label for="nameField" class="col-sm-9">Total_QTY</label>
+                    <label for="nameField" class="col-sm-12">Total_QTY+Free:-</label>
                 </div>
                 <div class="col-md-8">
-                    <label for="nameField" name="totalqty" id="totalqty" class="col-sm-3"
-                        style="color:red; font-weight:500; font-size:1rem;">0</label>
+                    <label for="nameField" name="totalqty" id="totalqty" class="col-sm-12"
+                        style="color:red; font-weight:500; font-size:1rem;text-align: right;padding-right:30%">0</label>
                 </div>
             </div>
         </div>
@@ -202,7 +202,7 @@ include('header.php'); ?>
         </div>
         <div class="col-md-3 align-items-center">
             <button class="btn btn-primary" id='done' title='Final Save'>Done</button>
-            <a href="<?php echo base_url().'index.php/purchase' ?>" class="btn btn-danger"
+            <a href="<?php echo base_url().'index.php/sale' ?>" class="btn btn-danger"
                 title='Final Cancel'>Cancel</a>
         </div>
     </div>
@@ -230,6 +230,22 @@ include('header.php'); ?>
 <script src="<?php echo base_url('assests/js/saleAdd.js'); ?>"></script>
 <script type="text/javascript">
 function dateclick() {
-    document.getElementById("date").innerHTML = new Date();
+    document.getElementById("date").innerHTML = new Date().toISOString().substr(0, 10);
 }
+$(document).ready(function() {
+    $('#date').val(new Date().toISOString().substr(0, 10));
+    
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+        dd = '0' + dd
+    }
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+    today = yyyy + '-' + mm + '-' + dd;
+    document.getElementById("date").setAttribute("max", today);
+    document.getElementById("Duedate").value = today;});
 </script>

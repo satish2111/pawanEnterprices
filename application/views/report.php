@@ -214,7 +214,7 @@ $(document).ready(function() {
         if (mm < 10) {
             mm = '0' + mm
         }
-        return today = dd + '-' + mm + '-' + yyyy;
+        return dd + '-' + mm + '-' + yyyy;
     }
 });
 

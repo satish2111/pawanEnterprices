@@ -90,7 +90,7 @@ include('header.php'); ?>
 						<td>
 							<?php
 							//for passing row id to controller for editing
-							echo  anchor("sale/getdetails/{$row->Sale_id}/{$row->Sale_id}",' Edit','class="fas fa-edit btn-xs btn btn-dark" aria-hidden="true"')?>
+							echo  anchor("sale/getdetails/{$row->Sale_id}",' Edit','class="fas fa-edit btn-xs btn btn-dark" aria-hidden="true"')?>
 						</td>
 						<td>
 							<!-- delete from database-->

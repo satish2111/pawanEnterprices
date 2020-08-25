@@ -17,9 +17,9 @@ class Purchase extends CI_Controller {
                 redirect(base_url().'login');  
             }
             $this->load->model('Read_Model');
-            $config['base_url'] = base_url('purchaselist');        
+            $config['base_url'] = base_url('purchase/index');        
             $config['total_rows'] = $this->Read_Model->num_row('tblmasterpurchase');      
-            $config['per_page'] = 5;               
+            $config['per_page'] = 10;               
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
             $config['attributes'] = array('class' => 'page-link');   
@@ -116,14 +116,22 @@ class Purchase extends CI_Controller {
               {
                 $final=($id[0]->suppler_id);
                 $result=$this->Purchase->serachlist($final);
+                if(isset($_SESSION['error'])){
+                    unset($_SESSION['error']);
+                }
                 $this->load->view('purchaselist',['result'=>$result]);
               }
               else{
                 $result='';
                 $this->session->set_flashdata('error', 'No Purchase Found On The Suppler Name');
-                $this->load->view('purchaselist',['result'=>$result]);
+                $this->load->view('purchaselist');
 
               }
+        }
+        else{
+            $result='';
+                $this->session->set_flashdata('error', 'Pls Enter Suppler Name');
+                $this->load->view('purchaselist');
         }
     }
     function editPurchasedelete()
