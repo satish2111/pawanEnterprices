@@ -48,15 +48,18 @@ include('header.php'); ?>
                         <th>Qty</th>
                     </thead>
                     <tbody>
-                        <?php foreach($result as $key => $rw) { ?>
+						
+                        <?php  
+                        $cnt=1;
+                        foreach($result as $key => $rw) { ?>
                         <tr>
-                            <td><?php echo $rw->srno;?></td>
+                            <td><?php echo $cnt;?></td>
                             <td><?php echo $rw->ProductName; ?> </td>
                             <td><?php echo $rw->Qty;?></td>
                         </tr>
                         <?php 
                     
-                        }?>
+                    $cnt++; }?>
                     </tbody>
                 </table>
             </div>

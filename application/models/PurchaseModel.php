@@ -333,7 +333,7 @@ else{
 	public function currentStock()
 	{
 		//from  where  GROUP BY  ORDER BY  
-		$Finalresport=$this->db->select('DISTINCT(ProductName),(ROW_NUMBER() OVER (ORDER BY ProductName))as srno, SUM(Qty) as Qty')
+		$Finalresport=$this->db->select('DISTINCT(ProductName), SUM(Qty) as Qty')
 						 ->where('Status','A')->from('tblpurchase')
 						 ->group_by('ProductName')->order_by('ProductName','ASC')->get()->result();
 						 return $Finalresport;
