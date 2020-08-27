@@ -213,9 +213,10 @@ public function insert($saletable,$totalbill)
 		{
 			$saleReport=$this->db->query("SELECT SUM(TotalAmt) as SaleAmount   FROM tblmastersale where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
 			$PurchaseReport=$this->db->query("SELECT SUM(Total_Amt) as PurchaseAmount FROM `tblmasterpurchase` WHERE  Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
-			if(isset($saleReport) && isset($PurchaseReport))
+			$PurchaseStockReport=$this->db->query("SELECT sum(cost) as Cost FROM `tblpurchase` WHERE BillDate  BETWEEN '".$startdate."' and '".$enddate."' and Status='A' ")->result();
+			if(isset($saleReport) && isset($PurchaseReport) && isset($PurchaseStockReport))
 			{
-				$returnData= (object)['status' => 'success','saleReport'=>$saleReport[0],'PurchaseReport'=>$PurchaseReport[0]];
+				$returnData= (object)['status' => 'success','saleReport'=>$saleReport[0],'PurchaseReport'=>$PurchaseReport[0],'PurchaseStockReport'=>$PurchaseStockReport[0]];
 			}
 			return $returnData;
 		}

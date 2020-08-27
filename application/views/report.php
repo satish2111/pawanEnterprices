@@ -81,7 +81,8 @@ include('header.php');?>
     </div>
     <div id='total' style='display:none'>
     <h4>Total Purchase :- <span id='purchase' style='color:red'></span></h4>
-    <h4>Total Sale :- <span id='sales' style='color:green'></span></h4>
+    <h4>Total Sale :- <span id='sales' style='color:green'></span></h4> 
+    <h4>Total Current Stock  :- <span id='PurchaseStock' style='color:#007bff;font-weight: 900;'></span></h4> 
     </div>
     <div id='mytable' style='display:none'>
         <h2 class='text-center'>Party Wish Report</h2>
@@ -150,8 +151,10 @@ $(document).ready(function() {
                     if (result['status'] == "success")
                     {
                         document.getElementById("total").style.display = "block";
+                        document.getElementById("mytable").style.display = "none";
                         document.getElementById('purchase').innerHTML=result['PurchaseReport']['PurchaseAmount'];
                         document.getElementById('sales').innerHTML=result['saleReport']['SaleAmount'];   
+                        document.getElementById('PurchaseStock').innerHTML=result['PurchaseStockReport']['Cost'];   
                     }
                     else {
                         Swal.fire('Warning', 'Something Wrong', 'warning');
@@ -188,6 +191,7 @@ $(document).ready(function() {
                 success: function(result) {
                     $(".pageloader").fadeOut("slow");
                     if (result['status'] == "success") {
+                        document.getElementById("total").style.display = "none";
                         document.getElementById('labelstartdate').innerHTML = getdateformat(
                             startdate);
                         document.getElementById('labelenddate').innerHTML = getdateformat(
