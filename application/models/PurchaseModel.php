@@ -27,7 +27,7 @@ class PurchaseModel extends CI_Model {
 		}
 	}
 
-	public function getdata($limit,$offset)
+		public function getdata($limit,$offset)
 		{
 			$date1=date('Y-m-d');
 			$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
@@ -38,6 +38,13 @@ class PurchaseModel extends CI_Model {
 			$this->db->where('p.PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
 			$this->db->limit($limit,$offset);
 			return $this->db->get()->result();	
+		}
+		public function num_row($tablename)
+		{
+			$date1=date('Y-m-d');
+				$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
+			return $totalRow=$this->db->where('Billdate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
+
 		}
 
 	function insert($purchasestockwise,$totalbill)
@@ -177,12 +184,13 @@ else{
 			//var_dump($full);
 			return $full;	
 	}
-	function serachlist($id)
+	function serachlist($id,$limit,$offset)
 	{
 		$this->db->select('s.suppler_id,s.FirstName,p.pur_id,p.billno,p.billdate,p.total_amt,p.amt_paid,p.paiddate,p.paymentmode');
 			$this->db->from('tblmasterpurchase p');
 			$this->db->join('tblsuppler s','p.suppler_id=s.suppler_id');
 			$this->db->where('p.suppler_id',$id);
+			$this->db->limit($limit,$offset);
 			return $this->db->get()->result();	
 	}
 	function editPurchasedelete($totalbill)
@@ -320,5 +328,20 @@ else{
 		// print_r($billtotal);
 		// print_r($purchas);
 		// exit();
+	}
+
+	public function currentStock()
+	{
+		//from  where  GROUP BY  ORDER BY  
+		$Finalresport=$this->db->select('DISTINCT(ProductName),(ROW_NUMBER() OVER (ORDER BY ProductName))as srno, SUM(Qty) as Qty')
+						 ->where('Status','A')->from('tblpurchase')
+						 ->group_by('ProductName')->order_by('ProductName','ASC')->get()->result();
+						 return $Finalresport;
+
+	}
+
+	public function num_row_search($tablename,$id)
+	{
+			return $totalRow=$this->db->where('suppler_id',$id)->get($tablename)->num_rows();
 	}
 }

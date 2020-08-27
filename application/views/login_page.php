@@ -15,7 +15,7 @@ include('startheader.php'); ?>
                 <?php } ?>
                 <div class="form-group">
                     <label for="email">Email address:</label>
-                    <input type="text" name="email" autocomplete="off" placeholder="Username"required class="form-control" id="email">
+                    <input type="text" name="email" autocomplete="off" autofocus placeholder="Username"required class="form-control" id="email">
                 </div>
                 <div class="form-group">
                     <label for="pwd">Password:</label>

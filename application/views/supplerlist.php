@@ -82,7 +82,7 @@ include('header.php');  ?>
 							}
 							else {
 							?><tr>
-								<td colspan="10"> Records not found</td>
+								<td colspan="12" style="color:red">Today's Records not found</td>
 							</tr>
 							<?php
 							}

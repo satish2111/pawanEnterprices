@@ -56,6 +56,14 @@ tr:nth-child(even) {
 						<?php
 					}
 				}
+				else {
+					?><tr>
+						<td colspan="12" style="color:red">Today's Records not found</td>
+					</tr>
+					<?php
+					}
+					?>
+					<?php
 					?>
 				</tbody>
 			</table>
@@ -87,6 +95,14 @@ tr:nth-child(even) {
 						<?php
 					}
 				}
+				else {
+					?><tr>
+						<td colspan="12" style="color:red">Today's Records not found</td>
+					</tr>
+					<?php
+					}
+					?>
+					<?php
 					?> 
 				</tbody>
 			</table>

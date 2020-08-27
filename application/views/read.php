@@ -31,13 +31,13 @@ include('header.php'); ?>
 				</div>
 			</div>
 			<div class="table-responsive mt-3">
-				<table id="mytable" class="table table-bordred table-striped">
+				<table id="mytable" class="table table-bordred table-striped" style='width:100%'>
 					<thead>
 						<th>#</th>
 						<th style='display: none;'>id</th>
 						<th>First Name</th>
 						<th>Last Name</th>
-						<th>Email</th>
+						<!-- <th>Email</th> -->
 						<th>Contact</th>
 						<th>Address</th>
 						<th>Credit days</th>
@@ -58,7 +58,7 @@ include('header.php'); ?>
 							<td style='display: none;'><?php echo htmlentities($row->client_id);?></td>
 							<td><?php echo htmlentities($row->FirstName);?></td>
 							<td><?php echo htmlentities($row->LastName);?></td>
-							<td><?php echo htmlentities($row->EmailId);?></td>
+							<!-- <td><?php echo htmlentities($row->EmailId);?></td> -->
 							<td><?php echo htmlentities($row->ContactNumber);?></td>
 							<td><?php echo htmlentities($row->Address);?></td>
 							<td><?php echo htmlentities($row->creditdays);?></td>
@@ -84,7 +84,7 @@ include('header.php'); ?>
 						}
 						else {
 						?><tr>
-							<td colspan="10"> Records not found</td>
+							<td colspan="12" style="color:red">Today's Records not found</td>
 						</tr>
 						<?php
 						}

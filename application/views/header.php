@@ -1,10 +1,17 @@
 <?php include('startheader.php');
 date_default_timezone_set('Asia/Calcutta'); ?>
+<style>
+@media(max-width:769px) {
+    .smhide {
+        display: none;
+    }
+}
+</style>
 <div class="container">
     <div class="col-lg-12 col-sm-12">
         <div class="row">
             <nav class="navbar navbar-expand-lg navbar-light bg-light ">
-                <a class="navbar-brand" href="#"></a>
+
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
                     aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -26,10 +33,13 @@ date_default_timezone_set('Asia/Calcutta'); ?>
                                 <li>
                                     <a class='' href='<?php echo base_url().'sale/report' ?>'>Party Wise Report</a>
                                 </li>
+                                <li>
+                                    <a class='' href='<?php echo base_url().'Purchase/stockreport' ?>'>Stock Report</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
-                    <span class="navbar-text">
+                    <span class="navbar-text smhide">
                         <label style="color:#fff; font-size:1em; margin-right:20px;">Hello.
                             <?php echo $this->session->name; ?></label>
                         <a href="<?php echo base_url().'index.php/read/dbbackup';?>"

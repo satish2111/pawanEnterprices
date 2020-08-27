@@ -16,9 +16,9 @@ class Sale extends CI_Controller {
 	    		 $this->session->set_flashdata('msg', 'Username / Password Invalid');
 	            redirect(base_url().'login');  
 	    	}
-            $this->load->model('Read_Model');
+            //$this->load->model('Read_Model');
             $config['base_url'] = base_url('sale/index');        
-            $config['total_rows'] = $this->Read_Model->num_row('tblmastersale');      
+            $config['total_rows'] = $this->sale->num_row('tblmastersale');      
             $config['per_page'] = 10;               
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
@@ -57,8 +57,8 @@ class Sale extends CI_Controller {
             }
              $this->load->model('Read_Model');
             $config['base_url'] = base_url('sale/index');        
-            $config['total_rows'] = $this->Read_Model->num_row('tblmastersale');      
-            $config['per_page'] = 5;               
+            $config['total_rows'] = $this->sale->num_row('tblmastersale');      
+            $config['per_page'] = 10;               
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
             $config['attributes'] = array('class' => 'page-link');   
@@ -224,5 +224,21 @@ class Sale extends CI_Controller {
             $status= $this->sale->billEdit($saletable,$totalbill);
             $this->output->set_content_type('application/json');
             echo json_encode(array('status'  => $status));
+    }
+    public function reportsalepurchase()
+    {
+        if(!$this->session->userdata('logged_in'))
+
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+       $startdate=$this->input->post('startdate');
+       $enddate=$this->input->post('enddate');
+      
+       $returnData=$this->sale->reportsalepurchase($startdate, $enddate);
+
+       $this->output->set_content_type('application/json');
+        echo json_encode($returnData);  
     }
 }

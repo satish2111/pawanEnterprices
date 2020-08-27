@@ -2,13 +2,29 @@
 $title='Party Wise Report';
 include('header.php');?>
 <style>
-button,
-a {
+.col-md-4{
+    margin:0;
+}
+.col-md-4>button,
+.col-md-4>a {
     margin-right: 2rem;
 }
+.btn-warning{
+    margin-top:0.5rem;
+    margin-left:4rem;
+    font-weight:900;
+}
+.btn-warning:hover{
+    color:#ffc107;
+    background-color:#000;
+    font-weight:100;
+    border:1px solid #ffc107;
+}
+@media print{
 
 #mytable,.table td, .table th {
     border: 1px solid #000;
+}
 }
 
 </style>
@@ -30,15 +46,13 @@ a {
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-12">
-            
-        </div>
+    
         <div class="col-md-4">
             <div class="form-group row align-items-center">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <label for="Billno"><b>Start Date<sup class="star">*</sup></b></label>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-8">
                     <input class="form-control" id="startdate" data-format="dd/MM/yyyy" name="stardate" type="date"
                         autocomplete="off" required tabindex="0" />
                 </div>
@@ -47,10 +61,10 @@ a {
         </div>
         <div class="col-md-4">
             <div class="form-group row align-items-center">
-                <div class="col-md-5">
+                <div class="col-md-4 ">
                     <label for="Billno"><b>End Date<sup class="star">*</sup></b></label>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-8">
                     <input class="form-control" id="enddate" data-format="dd/MM/yyyy" name="enddate" type="date"
                         autocomplete="off" required tabindex="0" />
                 </div>
@@ -62,7 +76,12 @@ a {
             <button class="btn btn-success" id='search' title='Get Data'>Search</button>
             <a href="<?php echo base_url().'sale/report' ?>" class="btn btn-danger" title='Final Cancel'>Cancel</a>
             <button class="btn btn-primary" onclick='printContent(mytable)'>Print</button>
+            <button class="btn btn-warning" id='amt'>Purachas | Sale Amt</button>
         </div>
+    </div>
+    <div id='total' style='display:none'>
+    <h4>Total Purchase :- <span id='purchase' style='color:red'></span></h4>
+    <h4>Total Sale :- <span id='sales' style='color:green'></span></h4>
     </div>
     <div id='mytable' style='display:none'>
         <h2 class='text-center'>Party Wish Report</h2>
@@ -101,11 +120,51 @@ $(document).ready(function() {
         mm = '0' + mm
     }
     today = yyyy + '-' + mm + '-' + dd;
+    $('#amt').click(function(){
+        var startdate = new Date($('#startdate').val());
+        var enddate = new Date($('#enddate').val());
+
+        if (startdate.getTime() === enddate.getTime()) {
+            Swal.fire({
+                title: 'Warning',
+                text: 'Start Date and End Date is Same,Please Changes That',
+                icon: 'error',
+                timer: 2000,
+                timerProgressBar: true,
+            });
+        }
+        else{
+            var data = {
+                'startdate': document.getElementById('startdate').value,
+                'enddate': document.getElementById('enddate').value
+            };
+            document.getElementById("pageloader").style.display = "block";
+            $.ajax({
+                data: data,
+                type: "POST",
+                url: "/pawanenterprises/index.php/sale/reportsalepurchase",
+                crossOrigin: false,
+                dataType: 'json',
+                success: function(result) {
+                    $(".pageloader").fadeOut("slow");
+                    if (result['status'] == "success")
+                    {
+                        document.getElementById("total").style.display = "block";
+                        document.getElementById('purchase').innerHTML=result['PurchaseReport']['PurchaseAmount'];
+                        document.getElementById('sales').innerHTML=result['saleReport']['SaleAmount'];   
+                    }
+                    else {
+                        Swal.fire('Warning', 'Something Wrong', 'warning');
+                    }
+                }
+            });
+        }
+    });
 
     $('#search').click(function() {
         var startdate = new Date($('#startdate').val());
-        var enddate = new Date($('#enddate').val())
-
+        var enddate = new Date($('#enddate').val());
+        document.getElementById("total").style.display = "none";
         if (startdate.getTime() === enddate.getTime()) {
             Swal.fire({
                 title: 'Warning',
@@ -194,7 +253,7 @@ $(document).ready(function() {
                     } 
                     
                     else {
-                        Swal.fire('Warning', 'Error Saving', 'warning');
+                        Swal.fire('Warning', 'Something Wrong', 'warning');
                     }
                 }
             });

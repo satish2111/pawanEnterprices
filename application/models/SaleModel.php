@@ -2,6 +2,14 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 date_default_timezone_set('Asia/Calcutta');
 class SaleModel extends CI_Model {
+
+	public function num_row($tablename)
+	{
+		$date1=date('Y-m-d');
+			$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
+		return $totalRow=$this->db->where('Billdate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
+
+	}
 	public function getdata($limit,$offset)
 		{
 			$date1=date('Y-m-d');
@@ -200,6 +208,18 @@ public function insert($saletable,$totalbill)
 			return $returnData;
 			//return $clientReport ;
 		}
+
+		public function  reportsalepurchase($startdate, $enddate)
+		{
+			$saleReport=$this->db->query("SELECT SUM(TotalAmt) as SaleAmount   FROM tblmastersale where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+			$PurchaseReport=$this->db->query("SELECT SUM(Total_Amt) as PurchaseAmount FROM `tblmasterpurchase` WHERE  Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+			if(isset($saleReport) && isset($PurchaseReport))
+			{
+				$returnData= (object)['status' => 'success','saleReport'=>$saleReport[0],'PurchaseReport'=>$PurchaseReport[0]];
+			}
+			return $returnData;
+		}
+
 		public function  getlastbillno($clientID)
 		{
 			$billno=$this->db->query("SELECT max(s.Sale_id)as Billno,CONCAT(FirstName,' ',LastName) as Name from tblmastersale s join tblclient c on s.client_id=c.client_id where s.client_id='".$clientID."'")->result();

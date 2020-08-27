@@ -10,16 +10,18 @@ class Read_Model extends CI_Model{
 	// 	}
 		function num_row($tablename)
 		{
-			
-			return $totalRow=$this->db->get($tablename)->num_rows();
+			 $date1=date('Y-m-d');
+			 $end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
+			 return $totalRow=$this->db->where('PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
 			// return $totalRow=$this->db->get($tablename)->num_rows();
 		}
 
 		public function getdata($ColumnNames,$tableName,$limit,$offset)
 		{
-
+			$date1=date('Y-m-d');
+			$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
 				$this->db->limit($limit,$offset);
-						$query=$this->db->select($ColumnNames)
+						$query=$this->db->select($ColumnNames)->where('PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')
 				->get($tableName);
 				return $query->result();
 			// 	echo "<pre>";

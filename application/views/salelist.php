@@ -50,7 +50,6 @@ include('header.php'); ?>
 				<thead>
 					<th>#</th>
 					<th style='display: none;'>id</th>
-					
 					<th>Bill No</th>
 					<th>Bill Date</th>
 					<th>Client Name</th>
