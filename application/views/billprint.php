@@ -93,7 +93,7 @@ td {
                 <h3 style='font-size:1.2rem;'>PAWAN ENTERPRIESE</h3>
                 <address style='f'>
                     Rosalie Complex A Wing 403 <br />Near ACP office Godrej Hill<br /> 
-                    Kalyan West 421301<br/>Mobile No. <b>9699115552</b>
+                    Kalyan West 421301<br/>Mobile No. <b>9699115552</b><br/><span style='margin-left:4.6rem;'><b>9822115552</b></span>
                 </address>
             </div>
             <div class="col-lg-4" style='float: left;width: 34%;padding-left: 2rem;text-align:center'>
@@ -230,9 +230,9 @@ var html = `<html>
 console.log(html);
 var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
 WinPrint.document.write(html);
-WinPrint.document.close();
+//WinPrint.document.close();
 WinPrint.focus();
-WinPrint.print();
-WinPrint.close();
-location.href = "/pawanenterprises/index.php/sale/index";
+//WinPrint.print();
+//WinPrint.close();
+//location.href = "/pawanenterprises/index.php/sale/index";
 </script>
