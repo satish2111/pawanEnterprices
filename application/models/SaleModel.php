@@ -237,7 +237,7 @@ public function insert($saletable,$totalbill)
 		public function  reportsalepurchase($startdate, $enddate)
 		{
 			$PurchaseReport=$this->db->query("SELECT SUM(Total_Amt) as PurchaseAmount FROM `tblmasterpurchase` WHERE  Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
-			$PurchaseStockReport=$this->db->query("SELECT sum(cost) as Cost FROM `tblpurchase` WHERE BillDate  BETWEEN '".$startdate."' and '".$enddate."' and Status='A' ")->result();
+			$PurchaseStockReport=$this->db->query("SELECT sum(MRP) as Cost FROM `tblpurchase` WHERE BillDate  BETWEEN '".$startdate."' and '".$enddate."' and Status='A' ")->result();
 			$purchasePaid=$this->db->query("SELECT SUM(Amt_paid) as PPaid from tblmasterpurchase where `BillDate` BETWEEN '".$startdate."' and '".$enddate."'")->result();
 			$purchaseOutstanding=$this->db->query("SELECT SUM(Total_amt) as TotalAmt from tblmasterpurchase where `BillDate` BETWEEN '".$startdate."' and '".$enddate."'")->result();
 
