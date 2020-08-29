@@ -25,12 +25,33 @@ class SaleModel extends CI_Model {
 		}
 		public function getsearchdata($limit,$offset,$clinetname)
 		{
+			$billNumber=array();
+			if($clinetname['productnamedata']!='')
+			{
+				
+				$billnos=$this->db->select('DISTINCT (Fk_Sale_id)')->from('tblsale')
+				->where('ProductName',$clinetname['productnamedata'])->get()->result_array();
+				
+				foreach($billnos as $key=>$val)
+				{
+
+						$billNumber[$key]=$val['Fk_Sale_id'];
+				}
+			}
+			
 			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate');
 			$this->db->from('tblmastersale s');
 			$this->db->join('tblclient c','s.client_id = c.client_id');
-			$this->db->where('c.FirstName',$clinetname);
+			if(empty($billNumber))
+			{
+				$this->db->where('c.FirstName',$clinetname['clientnamedata']);
+			}
+			else
+			{
+				$this->db->where_in('Sale_id',$billNumber);
+			}
 			$this->db->limit($limit,$offset);
-				return $this->db->get()->result();
+			return $this->db->get()->result();
 		}
 	public function clientlistpurchase()
 	{
@@ -197,26 +218,47 @@ public function insert($saletable,$totalbill)
 			
 		}
 	}
-		public function reportprint($startdate, $enddate)
+		public function reportprint($startdate, $enddate,$paidornot)
 		{
-			$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
-
+			if($paidornot=='Paid')
+			{
+				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where PaidAmt!='0.00' and TotalAmt!=PaidAmt and  Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+			}
+			else if ($paidornot=='Un-Paid'){
+				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+			}
 			if(isset($clientReport))
 			{
 				$returnData = (object) ['status' => 'success','clientreport'=>$clientReport];
 			}
 			return $returnData;
-			//return $clientReport ;
 		}
 
 		public function  reportsalepurchase($startdate, $enddate)
 		{
-			$saleReport=$this->db->query("SELECT SUM(TotalAmt) as SaleAmount   FROM tblmastersale where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
 			$PurchaseReport=$this->db->query("SELECT SUM(Total_Amt) as PurchaseAmount FROM `tblmasterpurchase` WHERE  Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
 			$PurchaseStockReport=$this->db->query("SELECT sum(cost) as Cost FROM `tblpurchase` WHERE BillDate  BETWEEN '".$startdate."' and '".$enddate."' and Status='A' ")->result();
-			if(isset($saleReport) && isset($PurchaseReport) && isset($PurchaseStockReport))
+			$purchasePaid=$this->db->query("SELECT SUM(Amt_paid) as PPaid from tblmasterpurchase where `BillDate` BETWEEN '".$startdate."' and '".$enddate."'")->result();
+			$purchaseOutstanding=$this->db->query("SELECT SUM(Total_amt) as TotalAmt from tblmasterpurchase where `BillDate` BETWEEN '".$startdate."' and '".$enddate."'")->result();
+
+			$saleGet=$this->db->query("SELECT SUM(PaidAmt) as SPaid  FROM tblmastersale where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+			
+			$saleReport=$this->db->query("SELECT SUM(TotalAmt) as SaleAmount   FROM tblmastersale where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+			if(isset($purchasePaid) && isset($PurchaseReport) && isset($PurchaseStockReport) && isset($purchaseOutstanding) &&
+			isset($saleReport) && isset($saleGet) )
 			{
-				$returnData= (object)['status' => 'success','saleReport'=>$saleReport[0],'PurchaseReport'=>$PurchaseReport[0],'PurchaseStockReport'=>$PurchaseStockReport[0]];
+				$returnData= (object)['status' => 'success',
+									
+									'PurchaseReport'=>$PurchaseReport[0],
+									'PurchaseStockReport'=>$PurchaseStockReport[0],
+									'purchasePaid'=>$purchasePaid[0],
+									'purchaseOutstanding'=>$purchaseOutstanding[0],
+
+
+									'saleGet'=>$saleGet[0],
+									//'saleOutstanding'=>$saleOutstanding[0],
+									'saleReport'=>$saleReport[0],
+								];
 			}
 			return $returnData;
 		}

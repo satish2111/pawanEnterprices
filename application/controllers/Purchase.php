@@ -161,7 +161,7 @@ class Purchase extends CI_Controller {
     }
     function editPurchasedelete()
     {
-        if(!$this->session->userdata('logged_in'))
+            if(!$this->session->userdata('logged_in'))
             {
                  $this->session->set_flashdata('msg', 'Username / Password Invalid');
                 redirect(base_url().'login');  
@@ -177,7 +177,7 @@ class Purchase extends CI_Controller {
         if(!$this->session->userdata('logged_in'))
             {
                  $this->session->set_flashdata('msg', 'Username / Password Invalid');
-                redirect(base_url().'login');  
+                 redirect(base_url().'login');  
             }
          $purchasestockwise= $this->input->post('purchasestockwise');
          $totalbill=$this->input->post('totalbill');
@@ -202,8 +202,51 @@ class Purchase extends CI_Controller {
 
     public function billPayment()
     {
-
+        if(!$this->session->userdata('logged_in'))
+            {
+                 $this->session->set_flashdata('msg', 'Username / Password Invalid');
+                redirect(base_url().'login');  
+            }
+            $totalbill=$this->input->post('billdetail'); 
+            $status= $this->Purchase->payment($totalbill);
+            $this->output->set_content_type('application/json');
+            echo json_encode(array('status'  => $status)); 
+    }
+    public function purchasereport()
+    {
+        if(isset($_SESSION['error'])){
+            unset($_SESSION['error']);
+        }
+        $this->load->view('purchasereport');
     }
 
+    public function purchaseReportData()
+    {
+        $startdate=$this->input->post('startdate');
+		$enddate=$this->input->post('enddate');
+        $paidornot=$this->input->post('PaidUnPaid');
+        if($startdate==$enddate)
+        {
+            $this->session->set_flashdata('error', "Start Date And End Date Should't Same ");
+            $this->load->view('purchasereport');
+        }
+        else if($paidornot=='')
+        {
+            $this->session->set_flashdata('error', "Please select the Paid / Un-Paid Wise");
+            $this->load->view('purchasereport');
+        }
+        else{
+            if(isset($_SESSION['error'])){
+                unset($_SESSION['error']);
+            }
+            $result=$this->Purchase->supplerReport($startdate,$enddate,$paidornot);
+            $returnData =  ['paidornot' => $paidornot,'startdate'=>$startdate,'enddate'=>$enddate,'data'=>$result];
+			
+            $this->load->view('purchasereport',['returnData'=>$returnData]);
+        }
+       
+
+
+    }
 
 }

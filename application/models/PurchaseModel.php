@@ -344,4 +344,37 @@ else{
 	{
 			return $totalRow=$this->db->where('suppler_id',$id)->get($tablename)->num_rows();
 	}
+
+	public function payment($paymentdetail)
+	{
+		$fromarray=array();
+		$fromarray['PaidDate']=$paymentdetail['PaidDate'];
+		$fromarray['PaymentMode']=$paymentdetail['PaymentMode'];
+		$fromarray['Amt_Paid']=$paymentdetail['Total_Amt'];
+		$this->db->where('Pur_Id',$paymentdetail['Pur_Id']);
+		$this->db->where('BillNo',$paymentdetail['BillNo']);
+		$this->db->update('tblmasterpurchase',$fromarray);
+		return 'success';
+	}
+	public function supplerReport($startdate,$enddate,$paidornot)
+	{
+		
+		//'SELECT Pur_Id,BillNo,CONCAT(FirstName,' ',LastName) as Name ,Total_Amt,Amt_Paid ,PaidDate,PaymentMode FROM tblmasterpurchase p JOIN tblsuppler s on s.suppler_id=p.suppler_id where BillDate BETWEEN '2020-07-01' and '2020-08-29' and Total_Amt!=Amt_Paid'
+			$this->db->select("Pur_Id,BillNo,CONCAT(FirstName,' ',LastName) as Name ,Total_Amt,Amt_Paid ,PaidDate,PaymentMode");
+			$this->db->from('tblmasterpurchase p');
+			$this->db->join('tblsuppler s','p.suppler_id=s.suppler_id');
+			$this->db->where("p.PostingDate BETWEEN '$startdate' and '$enddate' ");
+			
+			if($paidornot!='Paid')
+			{
+				$this->db->where('Total_Amt!=Amt_Paid');
+			}
+			else
+			{
+				$this->db->where('Total_Amt=Amt_Paid');
+			}
+			$data=$this->db->get()->result();	
+		
+			return $data;
+	}
 }

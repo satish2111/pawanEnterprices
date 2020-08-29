@@ -202,8 +202,7 @@ include('header.php'); ?>
         </div>
         <div class="col-md-3 align-items-center">
             <button class="btn btn-primary" id='done' title='Final Save'>Done</button>
-            <a href="<?php echo base_url().'index.php/sale' ?>" class="btn btn-danger"
-                title='Final Cancel'>Cancel</a>
+            <a href="<?php echo base_url().'index.php/sale' ?>" class="btn btn-danger" title='Final Cancel'>Cancel</a>
         </div>
     </div>
     <div class="row mt-5">
@@ -234,7 +233,7 @@ function dateclick() {
 }
 $(document).ready(function() {
     $('#date').val(new Date().toISOString().substr(0, 10));
-    
+
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth() + 1; //January is 0!
@@ -247,5 +246,6 @@ $(document).ready(function() {
     }
     today = yyyy + '-' + mm + '-' + dd;
     document.getElementById("date").setAttribute("max", today);
-    document.getElementById("Duedate").value = today;});
+    document.getElementById("Duedate").value = today;
+});
 </script>

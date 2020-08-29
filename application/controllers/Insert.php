@@ -146,7 +146,7 @@ public function InsertSuppler()
 		$this->load->model('Insert_Model');
 		$this->Insert_Model->updatedetails($fname,$lname,$email,$cntno,$adrss,$usid,$creditdays,$columname,$tablename);
 		} else {
-		$this->session->set_flashdata('error', 'Somthing went worng. Try again with valid details !!!!');
+		$this->session->set_flashdata('error', 'Something went worng. Try again with valid details !!!!');
 			if($pagename=='Clients')
 			{
 				redirect('read/userdata');

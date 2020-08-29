@@ -79,10 +79,33 @@ class Sale extends CI_Controller {
             $config['num_tag_open'] = '<li>';
             $config['num_tag_close'] = '</li>';
             $this->pagination->initialize($config);
-            $clientname=$this->input->post('search');
-            $result=$this->sale->getsearchdata($config['per_page'],$this->uri->segment(3),$clientname);
-            $this->load->view('salelist',['result'=>$result]);
-            
+            if(($this->input->post('search'))!=''){
+            $clientnamedata=$this->input->post('search');
+            }
+            else{
+                $clientnamedata='';
+            }
+            if(($this->input->post('productname'))!=''){
+            $productnamedata=$this->input->post('productname');
+            }
+            else{
+                $productnamedata='';
+            }
+            if(isset($clientnamedata) || isset($productnamedata) )
+            {
+
+                $clientname=array(
+                    'clientnamedata'=> $clientnamedata,
+                    'productnamedata'=> $productnamedata
+                );
+                $result=$this->sale->getsearchdata($config['per_page'],$this->uri->segment(3),$clientname);
+                $this->load->view('salelist',['result'=>$result]);
+            }
+            else{
+                $result='';
+                $this->session->set_flashdata('error', 'Something went worng. Try again with valid details !!!!');
+                $this->load->view('salelist',['result'=>$result]);
+                }   
     }
     public function add()
     {
@@ -167,7 +190,8 @@ class Sale extends CI_Controller {
         }
        $startdate=$this->input->post('startdate');
        $enddate=$this->input->post('enddate');
-       $returnData=$this->sale->reportprint($startdate, $enddate);
+       $paidornot=$this->input->post('paidornot');
+       $returnData=$this->sale->reportprint($startdate, $enddate,$paidornot);
 
        $this->output->set_content_type('application/json');
         echo json_encode($returnData); 

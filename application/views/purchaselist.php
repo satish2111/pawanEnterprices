@@ -1,6 +1,13 @@
 <?php
 $title='Purchase';
 include('header.php'); ?>
+<style>
+    .fordisabled {
+    pointer-events: none!important;
+    cursor: default!important;
+    color: #b58d8d!important;
+}
+</style>
 <div class="container">
     <div class="row mt-5">
         <div class="col-md-12">
@@ -80,16 +87,31 @@ include('header.php'); ?>
                             <td><?php echo htmlentities(date('d-m-Y',strtotime($row->billdate)));?></td>
                             <td><?php echo htmlentities($row->total_amt);?></td>
                             <td><?php echo htmlentities($row->amt_paid);?></td>
-                            <td><?php echo htmlentities('d-m-Y',strtotime($row->paiddate));?></td>
+                            <td><?php echo htmlentities(date('d-m-Y',strtotime($row->paiddate)));?></td>
                             <td><?php echo htmlentities($row->paymentmode);?></td>
+                            <?php if(floatval($row->total_amt)==floatval($row->amt_paid))
+                            {
+                                ?>
                             <td>
-                                <!-- <?php
-								//for passing row id to controller for payment
-								// echo  anchor("purchase/payment/$title/{$row->pur_id}/{$row->FirstName}",' Payment','class="fas fa-rupee-sign btn-xs btn btn-success " aria-hidden="true"')?>
-								 -->
-                                <button onclick="payment(this)" class=" btn-xs btn btn-success "><span
-                                        class="fas fa-rupee-sign"> Payment</button>
+                                <button onclick="payment(this,<?php echo  $row->pur_id;?>)" disabled
+                                    class=" btn-xs btn btn-success"><span class="fas fa-rupee-sign "> Payment</button>
+                            </td>
+                            <td>
+                                <?php
+								//for passing row id to controller for editing
+								echo  anchor("purchase/getdetails/{$row->pur_id}/{$row->FirstName}",' Edit','class="fordisabled fas fa-edit btn-xs " aria-hidden="true"')?>
+                            </td>
+                            <td>
+                                <button onclick="dlefunction(<?php echo $row->pur_id ?>)" disabled class="btn-xs fordisabled btndelete">
+                                <span class="fas fa-trash"> Delete</button>
+                            </td>
+                            <?php
 
+                            } else 
+                            {?>
+                            <td>
+                                <button onclick="payment(this,<?php echo  $row->pur_id;?>)"
+                                    class=" btn-xs btn btn-success "><span class="fas fa-rupee-sign"> Payment</button>
                             </td>
                             <td>
                                 <?php
@@ -97,12 +119,13 @@ include('header.php'); ?>
 								echo  anchor("purchase/getdetails/{$row->pur_id}/{$row->FirstName}",' Edit','class="fas fa-edit btn-xs" aria-hidden="true"')?>
                             </td>
                             <td>
-                                <?php
-								//for passing row id to controller
-								//echo anchor("Delete/index/{$row->client_id}",'Delete','class="fas fa-trash-o  btn-xs" aria-hidden="true"' )?>
                                 <button onclick="dlefunction(<?php echo $row->pur_id ?>)" class="btn-xs btndelete"><span
                                         class="fas fa-trash"> Delete</button>
                             </td>
+                            <?php
+                             } ?>
+
+
                         </tr>
                         <?php
 						// for serial number increment
@@ -129,86 +152,70 @@ include('header.php'); ?>
 </div>
 <?php include('footer.php'); ?>
 <script type="text/javascript">
-function payment(p){
-	var currow = $(p).closest('tr');
-	var totalAmt = currow.find('td:eq(5)').text();
+function payment(p, id) {
+    var currow = $(p).closest('tr');
+    var totalAmt = currow.find('td:eq(5)').text();
     var date = new Date().toISOString().substr(0, 10);
-    var billno='<h4 style="color:green">Payment Of Bill No ' + currow.find('td:eq(3)').text()+'<h4>';
-    var BillDate=currow.find('td:eq(4)').val;
-    
+    var billno = '<h4 style="color:green">Payment Of Bill No ' + currow.find('td:eq(3)').text() + '<h4>';
+
     (async () => {
 
-const { value: formValues } = await Swal.fire({
-  title: billno,
-  html:
-	'<label for="nameField" class="col-sm-12" style="color:red" >Total Amount</label>'+
-	'<input id="swal-input1" class="swal2-input form-control" value='+totalAmt+'  readonly style="background-color:#ccc">' +
-	'<label for="Billno"><b>Payment Date</b><sup class="star">*</sup></label>'+
-	'<input class="form-control" id="paiddate"  autofocus="autofocus" data-format="dd/MM/yyyy" name="paiddate" style="color:red"  type="date" autocomplete="off" value='+date+' required />'+
-	'<label for="nameField" class="col-sm-12" style="margin-top: 1em;color:green">Remark<small Style="color:red"> (For Reference)</small></label>'+
-    '<input id="swal-input2" class="swal2-input form-control" placeholder="Google Pay, NEFT, RTGS " >'+
-    '<h5 for="nameField" style="margin-top: 1em; color:red;">Note * : Once You click save that mean payment is done</h5>',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    allowOutsideClick: false,
-    showCloseButton: true,
-    focusConfirm: false,
-    confirmButtonText:
-    '<i class="fa fa-thumbs-up"></i> Save !',
-  confirmButtonAriaLabel: 'Thumbs up, great!',
-  cancelButtonText:
-    '<i class="fa fa-thumbs-down"></i> Cancel',
-  cancelButtonAriaLabel: 'Thumbs down',
-  preConfirm: () => {
-	return [
-	  document.getElementById('swal-input1').value,
-	  document.getElementById('paiddate').value,
-	  document.getElementById('swal-input2').value
-    ]
-  }
-})
+        const {
+            value: formValues
+        } = await Swal.fire({
+            title: billno,
+            html: '<label for="nameField" class="col-sm-12" style="color:red" >Total Amount</label>' +
+                '<input id="swal-input1" class="swal2-input form-control" value=' + totalAmt +
+                '  readonly style="background-color:#ccc">' +
+                '<label for="Billno"><b>Payment Date</b><sup class="star">*</sup></label>' +
+                '<input class="form-control" id="paiddate"  autofocus="autofocus" data-format="dd/MM/yyyy" name="paiddate" style="color:red"  type="date" autocomplete="off" value=' +
+                date + ' required />' +
+                '<label for="nameField" class="col-sm-12" style="margin-top: 1em;color:green">Remark<small Style="color:red"> (For Reference)</small></label>' +
+                '<input id="swal-input2" class="swal2-input form-control" placeholder="Google Pay, NEFT, RTGS " >' +
+                '<h5 for="nameField" style="margin-top: 1em; color:red;">Note * : Once You click save that mean payment is done and Please Try Avoid Editing after Payment.</h5>',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            allowOutsideClick: false,
+            showCloseButton: true,
+            focusConfirm: false,
+            position: 'top-end',
+            confirmButtonText: '<i class="fa fa-thumbs-up"></i> Save !',
+            confirmButtonAriaLabel: 'Thumbs up, great!',
+            cancelButtonText: '<i class="fa fa-thumbs-down"></i> Cancel',
+            cancelButtonAriaLabel: 'Thumbs down',
+            preConfirm: () => {
+                return [
+                    document.getElementById('swal-input1').value,
+                    document.getElementById('paiddate').value,
+                    document.getElementById('swal-input2').value
+                ]
+            }
+        })
 
-if (formValues) {
-    var id = "<?php echo base_url();?>index.php/purchase/billPayment/" + id;
-    //var today=(new Date(BillDate).toISOString().substr(0, 10));
-    console.log(BillDate);
-    return;
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1; //January is 0!
-    var yyyy = today.getFullYear();
-    if (dd < 10) {
-        dd = '0' + dd
-    }
-    if (mm < 10) {
-        mm = '0' + mm
-    }
-    today = yyyy + '-' + mm + '-' + dd;
-    
-    
-    
-    var billdetail={
-        'billNo':currow.find('td:eq(3)').text(),
-        'billDate':today,
-        'totalAmt':currow.find('td:eq(5)').text(),
-        'paidDate':document.getElementById('paiddate').value,
-        'remark':document.getElementById('swal-input2').value,
-    }
-    var data={
-        'billdetail':billdetail
-    }
-    console.log(data);
-    return;
-    $.ajax({
-                url: id,
-                data:data,
-                crossOringin: false,
-                mothod: "POST",
+        if (formValues) {
+            var urlid = "<?php echo base_url();?>index.php/purchase/billPayment/" + id;
+            var billdetail = {
+                'BillNo': currow.find('td:eq(3)').text(),
+                'Pur_Id': id,
+                'Total_Amt': currow.find('td:eq(5)').text(),
+                'PaidDate': document.getElementById('paiddate').value,
+                'PaymentMode': document.getElementById('swal-input2').value,
+            }
+            var data = {
+                'billdetail': billdetail
+            }
+            $.ajax({
+                data: data,
+                type: "POST",
+                url: urlid,
+                crossOrigin: false,
+                dataType: 'json',
                 success: function(data) {
                     if (data.status == "success") {
                         Swal.fire({
-                            title: 'Deleted!',
-                            text: "Your file has been deleted.",
+                            title: 'Payment!',
+                            text: "Updated !!!",
                             icon: 'success',
                             timer: 2000,
                             timerProgressBar: true,
@@ -216,12 +223,12 @@ if (formValues) {
                             location.reload();
                         })
                     }
-            }
-        })
-      Swal.fire(JSON.stringify(formValues))
-}
+                }
+            })
+            // Swal.fire(JSON.stringify(formValues))
+        }
 
-})()
+    })()
 }
 
 function dlefunction(id) {
