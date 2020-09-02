@@ -15,7 +15,7 @@ class SaleModel extends CI_Model {
 			$date1=date('Y-m-d');
 			$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
 			
-			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate');
+			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate,s.OutstandingAmt');
 			$this->db->from('tblmastersale s');
 			$this->db->join('tblclient c','s.client_id = c.client_id');
 			$this->db->where('s.Billdate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
@@ -39,12 +39,22 @@ class SaleModel extends CI_Model {
 				}
 			}
 			
-			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate');
+			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate,s.OutstandingAmt');
 			$this->db->from('tblmastersale s');
 			$this->db->join('tblclient c','s.client_id = c.client_id');
 			if(empty($billNumber))
 			{
-				$this->db->where('c.FirstName',$clinetname['clientnamedata']);
+				$firtname=explode( ' ', $clinetname['clientnamedata'] );
+				$first=$firtname[0];
+				if(isset($firtname[1]))
+				{
+					$lastname=$firtname[1];
+				}
+				else{
+					return 'failed';
+				}
+				$this->db->where('c.FirstName',$first);
+				$this->db->where('c.LastName',$lastname);
 			}
 			else
 			{
@@ -56,7 +66,7 @@ class SaleModel extends CI_Model {
 	public function clientlistpurchase()
 	{
 		
-		$clientnamelist= $this->db->select('s.client_id,s.FirstName')->
+		$clientnamelist= $this->db->select('s.client_id,CONCAT(FirstName," ",LastName) as FirstName')->
 			from('tblmastersale p')->DISTINCT('s.client_id,s.FirstName')
 				->join('tblclient s','p.client_id=s.client_id')
 				->get();
@@ -94,8 +104,16 @@ public function checkuser($clientname)
 	
 	$firtname=explode( ' ', $clientname );
 	$firt=$firtname[0];
-	$lastname=$firtname[1];
-	$username=$this->db->select('client_id')->where('FirstName',$firt)->where('LastName',$lastname)->get('tblclient');
+	if(isset($firtname[1]))
+	{
+		$lastname=$firtname[1];
+	}
+	else{
+		return 'failed';
+	}
+	if($firt!='' && $lastname!='')
+	{
+			$username=$this->db->select('client_id')->where('FirstName',$firt)->where('LastName',$lastname)->get('tblclient');
 			if($username->result())
 			{
 				return 'success';
@@ -104,6 +122,10 @@ public function checkuser($clientname)
 			{
 				return 'failed';
 			}
+	}
+	else{
+		return 'failed';
+	}
 }
 public function checkprodutname($productName)
 {
@@ -385,4 +407,69 @@ public function insert($saletable,$totalbill)
 			}
 					
 		}
+		public function payment($paymentdetail)
+		{
+
+			$fromarray=array();
+			$fromarray['PaidAmt']=$paymentdetail['PaidAmt'];
+			$fromarray['OutstandingAmt']=$paymentdetail['OutstandingAmt'];
+			$fromarray['lastpaiddate']=$paymentdetail['lastpaiddate'];
+			$this->db->where('Sale_id',$paymentdetail['Sale_id']);
+			$this->db->where('TotalAmt',$paymentdetail['TotalAmt']);
+			$this->db->update('tblmastersale',$fromarray);
+
+			$Detailinsert=array();
+			$Detailinsert['Fk_Sale_id']=$paymentdetail['Sale_id'];
+			$Detailinsert['DateOfPaid']=$paymentdetail['lastpaiddate'];
+			$Detailinsert['Amt']=$paymentdetail['Amt'];
+			$Detailinsert['Remark']=$paymentdetail['Remark'];
+			$this->db->insert('tblsalepayment',$Detailinsert);
+			return 'success';
+		}
+
+		public function clientlistPayment()
+		{
+			$columnnames="DISTINCT(c.client_id), CONCAT(FirstName,' ',LastName) as FirstName";
+				
+			$this->db->order_by('FirstName','asc');
+				$clientdata= $this->db->select($columnnames)
+							->from('tblmastersale s')->join('tblclient c','s.client_id=c.client_id')
+							->join('tblsalepayment p','Fk_Sale_id=s.client_id')->get();
+				if($clientdata->num_rows()>0)
+				{
+					return $clientdata->result();
+				}
+		}
+
+		public function partyDetailReport($startdate,$enddate,$client)
+		{
+				$firtname=explode( ' ', $client );
+				$first=$firtname[0];
+				if(isset($firtname[1]))
+				{
+					$lastname=$firtname[1];
+				}
+				else{
+					return 'failed';
+				}
+				if(isset($first) && isset($lastname))
+				{
+					$columnnames='Concat(c.FirstName," ",c.LastName) as Name,p.Fk_Sale_id,p.DateOfPaid,p.Amt,p.Remark,s.TotalAmt,s.OutstandingAmt';
+					$detailData=$this->db->select($columnnames)->from('tblclient c')
+									 ->join('tblmastersale s','s.client_id = c.client_id')
+									 ->join('tblsalepayment  p','s.Sale_id=p.Fk_Sale_id')
+									 ->where('c.FirstName',$first)
+									 ->where('c.LastName',$lastname)
+									 ->where('DateOfPaid BETWEEN "'.$startdate. '" and "'. $enddate.'"')->get();
+									 if($detailData->num_rows()>0)
+									 {
+										 
+										 return $detailData->result();
+									 }
+				}
+				else{
+					
+				}
+		}
+
 }

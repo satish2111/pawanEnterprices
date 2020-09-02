@@ -124,7 +124,7 @@ include('header.php'); ?>
                             style='float: right;margin-top: -0.7rem;'>*</sup></label>
                 </div>
                 <div class="col-md-9">
-                    <input type="text" name="txtmra" value="" id='mrp' placeholder="MRP" class="form-control"
+                    <input type="text" name="mrp" value="" id='mrp' placeholder="MRP" class="form-control"
                         onkeypress="return isNumberKey(event)" oninput="calculate()" maxlength="5" required>
                 </div>
             </div>
@@ -137,7 +137,7 @@ include('header.php'); ?>
                 </div>
                 <div class="col-md-8">
                     <input type="text" name="txtfree" value="" id='free' placeholder="Free" class="form-control"
-                        onkeypress="return isNumberKey(event)" maxlength="5">
+                        onkeypress="return validateFloatKeyPress(this,event);s" maxlength="5">
                 </div>
             </div>
             <?php echo form_error('mrp'); ?>

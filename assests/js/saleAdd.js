@@ -96,6 +96,15 @@ $(document).ready(function() {
 
             var onlyavailablequantity = test[1];
             var finalqty = Number(quantity) + Number(free);
+            if (free == '0.5' || free == '0.50') {
+                mrp = document.getElementById('mrp').value;
+                halfmrp = mrp / 2;
+                totalGross = document.getElementById('gross').value;
+                finalTotalProduct = totalGross - halfmrp;
+                document.getElementById('gross').value = finalTotalProduct;
+            } else if (free == 0 || free > 0) {
+                calculate();
+            }
 
             if (Number(onlyavailablequantity) < Number(finalqty)) {
 
@@ -567,4 +576,33 @@ function tabelRowRemove(p) {
             document.getElementById('table1').rows[i].cells[0].innerHTML = i;
         }
     }
+}
+
+function validateFloatKeyPress(el, evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode;
+    var number = el.value.split('.');
+    if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    //just one dot
+    if (number.length > 1 && charCode == 46) {
+        return false;
+    }
+    //get the carat position
+    var caratPos = getSelectionStart(el);
+    var dotPos = el.value.indexOf(".");
+    if (caratPos > dotPos && dotPos > -1 && (number[1].length > 1)) {
+        return false;
+    }
+    return true;
+}
+
+
+function getSelectionStart(o) {
+    if (o.createTextRange) {
+        var r = document.selection.createRange().duplicate()
+        r.moveEnd('character', o.value.length)
+        if (r.text == '') return o.value.length
+        return o.value.lastIndexOf(r.text)
+    } else return o.selectionStart
 }

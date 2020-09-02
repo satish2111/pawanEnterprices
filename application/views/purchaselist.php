@@ -177,6 +177,7 @@ function payment(p, id) {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             allowOutsideClick: false,
+            allowEscapeKey: false,
             showCloseButton: true,
             focusConfirm: false,
             position: 'top-end',

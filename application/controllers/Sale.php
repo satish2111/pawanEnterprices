@@ -265,4 +265,54 @@ class Sale extends CI_Controller {
        $this->output->set_content_type('application/json');
         echo json_encode($returnData);  
     }
+
+    public function billPayment()
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+             $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        $totalbill=$this->input->post('billdetail'); 
+        $status= $this->sale->payment($totalbill);
+        $this->output->set_content_type('application/json');
+        echo json_encode(array('status'  => $status)); 
+    }
+
+    public function Details()
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        $this->load->view('partydetailwisereport');
+    }
+
+    public function partyWiseDetail()
+    {
+        $startdate=$this->input->post('stardate');
+		$enddate=$this->input->post('enddate');
+        $client=$this->input->post('Client');
+        if($startdate==$enddate)
+        {   
+            $this->session->set_flashdata('error', "Start Date And End Date Should't Same ");
+            $this->load->view('partydetailwisereport');
+        }
+        else if($client=='')
+        {  
+            $this->session->set_flashdata('error', "Please select the Client Name");
+            $this->load->view('partydetailwisereport');
+        }
+        else{
+
+            if(isset($_SESSION['error'])){
+                unset($_SESSION['error']);
+            }
+            $result=$this->sale->partyDetailReport($startdate,$enddate,$client);
+            $returnData =  ['client' => $client,'startdate'=>$startdate,'enddate'=>$enddate,'data'=>$result];
+			
+            $this->load->view('partydetailwisereport',['returnData'=>$returnData]);
+        }
+    }
 }
