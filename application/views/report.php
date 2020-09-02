@@ -112,10 +112,12 @@ include('header.php');?>
                     <td style='color:red;font-weight:500;'>Purchase</td>
                     <td style='color:red;font-weight:500;'>Purchase Amount Paid</td>
                     <td style='color:red;font-weight:500;'>Purchase Amount Outstanding</td>
-                    <td style='color:#007bff;font-weight:500;'>Current Stock </td>
+                    <td style='color:#007bff;font-weight:500;'>Current Stock (Cost)</td>
+                    <td style='color:#007bff;font-weight:500;'>Current Stock (DP)</td>
                     <td style='color:green; font-weight:400;'>Sale</td>
-                    <td style='color:green; font-weight:400;'>Sale Amount Get </td>
-                    <td style='color:green; font-weight:400;'>Sale Amount Outstanding </td>
+                    <td style='color:green; font-weight:400;'>Sale Cost</td>
+                    <td style='color:green; font-weight:400;'>Payment Get From Party  </td>
+                    <td style='color:green; font-weight:400;'>Payment Amount Outstanding From Party </td>
                 </tr>
             <tbody id='total'>
                 <tr>
@@ -123,8 +125,10 @@ include('header.php');?>
                     <td> <span id='purchase'></span></td>
                     <td> <span id='purchasePaid'></span></td>
                     <td> <span id='purchaseOutstanding'></span></td>
+                    <td> <span id='currentStockCost'></span></td>
                     <td> <span id='currentStock'></span></td>
                     <td> <span id='sale'></span></td>
+                    <td> <span id='saleCost'></span></td>
                     <td> <span id='saleGet'></span></td>
                     <td> <span id='saleOutstanding'></span></td>
                 </tr>
@@ -206,13 +210,18 @@ $(document).ready(function() {
                             enddate);
                         document.getElementById('purchase').innerHTML = result[
                             'PurchaseReport']['PurchaseAmount'];
-                        document.getElementById('currentStock').innerHTML = result[
+                            document.getElementById('currentStockCost').innerHTML = result[
                             'PurchaseStockReport']['Cost'];
+                        document.getElementById('currentStock').innerHTML = result[
+                            'PurchaseStockReport']['MRP'];
                         document.getElementById('purchasePaid').innerHTML = result[
                             'purchasePaid']['PPaid'];
                         document.getElementById('purchaseOutstanding').innerHTML = result[
                             'purchaseOutstanding']['TotalAmt'];
 
+
+                        document.getElementById('saleCost').innerHTML = result[
+                            'SaleWiseTotal']['Cost'];    
                         document.getElementById('saleGet').innerHTML = result['saleGet'][
                             'SPaid'];
                            var totalsale=result['saleReport']['SaleAmount'];

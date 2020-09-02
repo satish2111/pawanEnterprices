@@ -259,7 +259,8 @@ public function insert($saletable,$totalbill)
 		public function  reportsalepurchase($startdate, $enddate)
 		{
 			$PurchaseReport=$this->db->query("SELECT SUM(Total_Amt) as PurchaseAmount FROM `tblmasterpurchase` WHERE  Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
-			$PurchaseStockReport=$this->db->query("SELECT sum(MRP) as Cost FROM `tblpurchase` WHERE BillDate  BETWEEN '".$startdate."' and '".$enddate."' and Status='A' ")->result();
+			$PurchaseStockReport=$this->db->query("SELECT sum(MRP) as MRP , SUM(Cost) as Cost FROM `tblpurchase` WHERE BillDate  BETWEEN '".$startdate."' and '".$enddate."' and Status='A' ")->result();
+			$SaleWiseTotal=$this->db->query("SELECT  SUM(Cost) as Cost FROM `tblpurchase` WHERE BillDate  BETWEEN '".$startdate."' and '".$enddate."' and Status='S' ")->result();
 			$purchasePaid=$this->db->query("SELECT SUM(Amt_paid) as PPaid from tblmasterpurchase where `BillDate` BETWEEN '".$startdate."' and '".$enddate."'")->result();
 			$purchaseOutstanding=$this->db->query("SELECT SUM(Total_amt) as TotalAmt from tblmasterpurchase where `BillDate` BETWEEN '".$startdate."' and '".$enddate."'")->result();
 
@@ -267,7 +268,7 @@ public function insert($saletable,$totalbill)
 			
 			$saleReport=$this->db->query("SELECT SUM(TotalAmt) as SaleAmount   FROM tblmastersale where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
 			if(isset($purchasePaid) && isset($PurchaseReport) && isset($PurchaseStockReport) && isset($purchaseOutstanding) &&
-			isset($saleReport) && isset($saleGet) )
+			isset($saleReport) && isset($saleGet) && isset($SaleWiseTotal) )
 			{
 				$returnData= (object)['status' => 'success',
 									
@@ -275,9 +276,8 @@ public function insert($saletable,$totalbill)
 									'PurchaseStockReport'=>$PurchaseStockReport[0],
 									'purchasePaid'=>$purchasePaid[0],
 									'purchaseOutstanding'=>$purchaseOutstanding[0],
-
-
 									'saleGet'=>$saleGet[0],
+									'SaleWiseTotal'=>$SaleWiseTotal[0],
 									//'saleOutstanding'=>$saleOutstanding[0],
 									'saleReport'=>$saleReport[0],
 								];
