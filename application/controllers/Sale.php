@@ -121,7 +121,8 @@ class Sale extends CI_Controller {
     {
         $textboxvalue=$this->input->post('textboxvalue');
         $status=$this->sale->checkuser($textboxvalue);
-        echo json_encode(array('status'  => $status)); 
+        $this->output->set_content_type('application/json');
+        echo json_encode($status); 
     }
     function checkproductname()
     {

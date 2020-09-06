@@ -9,6 +9,7 @@ $(document).ready(function() {
     $("#client").blur(function() {
         var textboxvalue = document.getElementById("client").value;
 
+
         if (textboxvalue != '') {
             document.getElementById("pageloader").style.display = "block";
             var data = {
@@ -22,7 +23,15 @@ $(document).ready(function() {
                 dataType: 'json',
                 success: function(result) {
                     $(".pageloader").fadeOut("slow");
-                    if (result.status == "success") {
+                    if (result['status'] == "success") {
+                        Swal.fire({
+                            title: result['clientTotalAmt']['Total'],
+                            text: 'Total Amount Outstanding',
+                            icon: 'info',
+                            showCancelButton: false,
+                            timer: 6000,
+                            timerProgressBar: true,
+                        });
                         $("#client option").each(function(i, el) {
                             data[$(el).data("value")] = $(el).val();
                         });
@@ -42,7 +51,6 @@ $(document).ready(function() {
                         }
                         today = yyyy + '-' + mm + '-' + dd;
                         document.getElementById("Duedate").value = today;
-
                     } else {
                         Swal.fire({
                             title: 'Error',

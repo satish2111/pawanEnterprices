@@ -113,15 +113,20 @@ public function checkuser($clientname)
 	}
 	if($firt!='' && $lastname!='')
 	{
-			$username=$this->db->select('client_id')->where('FirstName',$firt)->where('LastName',$lastname)->get('tblclient');
-			if($username->result())
+			$username=$this->db->select('client_id')->where('FirstName',$firt)->where('LastName',$lastname)->get('tblclient')->result();
+			if($username!='')
 			{
-				return 'success';
+				$tempid=$username[0]->client_id;
+				$clientTotalAmt=$this->db->select('(SUM(TotalAmt)-sum(PaidAmt))as Total')->where('client_id',$tempid)->get('tblmastersale')->result();
+				$returnData = (object) ['status' => 'success','clientTotalAmt'=>$clientTotalAmt[0]];
 			}
 			else
 			{
 				return 'failed';
+				$returnData = (object) ['status' => 'success','clientTotalAmt'=>''];
 			}
+			
+			return  $returnData;
 	}
 	else{
 		return 'failed';
