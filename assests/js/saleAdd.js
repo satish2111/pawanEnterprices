@@ -68,8 +68,7 @@ $(document).ready(function() {
         }
     });
     //client vaild from backend end//
-
-
+    //test
 
     //qty check
     $('#quantity').blur(function() {
