@@ -94,8 +94,8 @@ include('header.php');?>
         <div class="col-md-12 text-center">
             <button class="btn btn-success" id='search' title='Get Data'>Search</button>
             <a href="<?php echo base_url().'sale/report' ?>" class="btn btn-danger" title='Final Cancel'>Cancel</a>
-            <button class="btn btn-warning" id='amt'>Total Purchase | Sale Amount</button>
             <button class="btn btn-primary" onclick='printContent(mytable)' style='display: none;' id='print'>Print</button>
+            <button class="btn btn-warning" id='amt'>Total Purchase | Sale Amount</button>
             
         </div>
     </div>
@@ -103,12 +103,12 @@ include('header.php');?>
         <table id="total" class="table table-bordred table-striped">
             <thead>
                 <tr>
-                    <td colspan='8'>
-                        <h4 class='text-center'>Total As No <br/> From:- <span id='labelstartdate'></span> To :- <span id='labelenddate'></span> </h4>
+                    <td colspan='10'>
+                        <h4 class='text-center'>Total Amount As No <br/> From :- <span id='labelstartdate'></span> To :- <span id='labelenddate'></span> </h4>
                     </td>
                 </tr>
                 <tr>
-                    <td>#</td>
+                    <!-- <td>#</td> -->
                     <td style='color:red;font-weight:500;'>Purchase</td>
                     <td style='color:red;font-weight:500;'>Purchase Amount Paid</td>
                     <td style='color:red;font-weight:500;'>Purchase Amount Outstanding</td>
@@ -121,7 +121,7 @@ include('header.php');?>
                 </tr>
             <tbody id='total'>
                 <tr>
-                    <td>1</td>
+                    <!-- <td>1</td> -->
                     <td> <span id='purchase'></span></td>
                     <td> <span id='purchasePaid'></span></td>
                     <td> <span id='purchaseOutstanding'></span></td>
@@ -139,6 +139,7 @@ include('header.php');?>
     <div id='mytable' class='mt-3' style='display:none'>
         <h2 class='text-center'>Party Wish Report</h2>
         <h4 class='text-center'>From:-<span id='labelstartdatefor'></span> To :-<span id='labelenddatefor'></span> </h4>
+        <h5 class='text-center'>Mode Of Payment :- <span id='labelpaidornot'></span></h5>
         <table id="table1" class="table table-bordred table-striped">
             <!-- <thead>
                 
@@ -242,6 +243,9 @@ $(document).ready(function() {
         var startdate = new Date($('#startdate').val());
         var enddate = new Date($('#enddate').val());
         document.getElementById("total").style.display = "none";
+       // $('#table1').detach();
+
+       $("#table1").find("tr:gt(0)").remove();
         var paidornot = ($('#PaidUnPaid')).val();
         if (startdate.getTime() === enddate.getTime() && paidornot == '') {
             Swal.fire({
@@ -267,6 +271,8 @@ $(document).ready(function() {
             };
             document.getElementById("pageloader").style.display = "block";
             document.getElementById("print").style.display = "inline-block";
+            document.getElementById("amt").style.display = "none"; 
+            
             var x = document.getElementById("table1").rows.length;
             if (x != '0') {
                 // $("#table1").empty();
@@ -287,6 +293,7 @@ $(document).ready(function() {
                             startdate);
                         document.getElementById('labelenddatefor').innerHTML = getdateformat(
                             enddate);
+                            document.getElementById('labelpaidornot').innerHTML = paidornot;
                         var data = result['clientreport'].reduce((h, {
                             Sale_id,
                             Billdate,
@@ -299,27 +306,26 @@ $(document).ready(function() {
                             client_id
                         }) => {
                             return Object.assign(h, {
-                                [client_id]: (h[client_id] || []).concat({
+                                [Name]: (h[Name] || []).concat({
                                     Sale_id,
                                     Billdate,
                                     DueDate,
                                     TotalAmt,
                                     PaidAmt,
                                     OutstandingAmt,
-                                    Name,
+                                    client_id,
                                     Address
-
                                 })
                             })
                         }, {})
-                        for (var [clientId, bill] of Object.entries(data)) {
-                            $("#table1 tbody").append(`<tr><td colspan= 6><b>Party Name :- ${bill[0].Name}</td></tr>
+                        for (var [Name, bill] of Object.entries(data)) {
+                            $("#table1 tbody").append(`<tr><td colspan= 6><b>Party Name :- ${Name}</td></tr>
                                                     <tr><td>Bill No</td>
                                                     <td>Bill Date</td>
                                                     <td>Total Amt</td>
                                                     <td>Due Date</td>
                                                     <td>Paid Amt</td>
-                                                    <td>outstanding</td></tr>`);
+                                                    <td>Outstanding</td></tr>`);
                             var billTotalAmt = 0;
                             var billTotalPaidAmt = 0;
                             var billTotalOutAmt = 0;
@@ -378,5 +384,9 @@ function printContent(el) {
     document.body.innerHTML = restorepage;
     $('#startdate').val(new Date().toISOString().substr(0, 10));
     $('#enddate').val(new Date().toISOString().substr(0, 10));
+    document.getElementById("amt").style.display = "inline-block"; 
+    document.getElementById("print").style.display = "none"; 
+    
+
 }
 </script>

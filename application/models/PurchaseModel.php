@@ -43,7 +43,7 @@ class PurchaseModel extends CI_Model {
 		{
 			$date1=date('Y-m-d');
 				$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
-			return $totalRow=$this->db->where('Billdate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
+			return $totalRow=$this->db->where('PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
 
 		}
 

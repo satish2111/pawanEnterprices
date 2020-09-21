@@ -17,8 +17,8 @@ class Read extends CI_Controller{
 	    		 $this->session->set_flashdata('msg', 'Username / Password Invalid');
 	            redirect(base_url().'login');  
 	    	}
-		$this->load->model('Read_Model');
-		$config['base_url'] = base_url('read/userdata');        
+			$this->load->model('Read_Model');
+			$config['base_url'] = base_url('read/userdata');        
 			$config['total_rows'] = $this->Read_Model->num_row('tblclient');      
 			$config['per_page'] = 10;               
 			$config['full_tag_open'] = '<ul class="pagination">';        
@@ -41,13 +41,13 @@ class Read extends CI_Controller{
 			$config['num_tag_open'] = '<li>';
 			$config['num_tag_close'] = '</li>';
 			$this->pagination->initialize($config);
-		$ColumnNames='FirstName,LastName,EmailId,ContactNumber,Address,PostingDate,client_id,creditdays';
-		$tablename='tblclient';
-		$results=$this->Read_Model->getdata($ColumnNames,$tablename,$config['per_page'],$this->uri->segment(3));
-		 if(isset($_SESSION['error'])){
+			$ColumnNames='FirstName,LastName,EmailId,ContactNumber,Address,PostingDate,client_id,creditdays';
+			$tablename='tblclient';
+			$results=$this->Read_Model->getdata($ColumnNames,$tablename,$config['per_page'],$this->uri->segment(3));
+		 	if(isset($_SESSION['error'])){
                     unset($_SESSION['error']);
                 }
-		$this->load->view('read',['result'=>$results]);
+			$this->load->view('read',['result'=>$results]);
 	}
 
 	// for particular recod
@@ -114,15 +114,41 @@ class Read extends CI_Controller{
 					{
 						$wherecolumnname='FirstName';
 						$tablename='tblclient';
+						$config['total_rows'] = $this->Read_Model->num_row('tblclient');      
+
 					}
 					else if($pagename=='Suppliers')
 					{
 						$wherecolumnname='FirstName';
 						$tablename='tblsuppler';
+						$config['total_rows'] = $this->Read_Model->num_row('tblsuppler');      
 					}
 				}
-						
-				$client=$this->Read_Model->searchget($tablename,$wherecolumnname,$name);
+				$this->load->model('Read_Model');
+				$config['base_url'] = base_url('read/search');        
+				$config['per_page'] = 2;               
+				$config['full_tag_open'] = '<ul class="pagination">';        
+				$config['full_tag_close'] = '</ul>';  
+				$config['attributes'] = array('class' => 'page-link');   
+				$config['first_link'] = 'First';        
+				$config['last_link'] = 'Last';   
+				$config['first_tag_open'] = '<li>';        
+				$config['first_tag_close'] = '</li>';        
+				$config['prev_link'] = '&laquo';        
+				$config['prev_tag_open'] = '<li class="prev">';        
+				$config['prev_tag_close'] = '</li>';        
+				$config['next_link'] = '&raquo';        
+				$config['next_tag_open'] = '<li>';        
+				$config['next_tag_close'] = '</li>';        
+				$config['last_tag_open'] = '<li>';        
+				$config['last_tag_close'] = '</li>';        
+				$config['cur_tag_open'] = '<li class="page-item active"><a href="#" class="page-link">';
+				$config['cur_tag_close'] = '<span class="sr-only">(current)</span></a></li>';        
+				$config['num_tag_open'] = '<li>';
+				$config['num_tag_close'] = '</li>';
+				$this->pagination->initialize($config);
+
+				$client=$this->Read_Model->searchget($tablename,$wherecolumnname,$name,$config['per_page'],$this->uri->segment(3));
 				$results=$client;
 				if($pagename=='Clients')
 				{

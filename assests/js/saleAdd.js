@@ -8,8 +8,6 @@ $(document).ready(function() {
     //client vaild from backend start//
     $("#client").blur(function() {
         var textboxvalue = document.getElementById("client").value;
-
-
         if (textboxvalue != '') {
             document.getElementById("pageloader").style.display = "block";
             var data = {

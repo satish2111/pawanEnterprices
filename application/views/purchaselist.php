@@ -29,7 +29,7 @@ include('header.php'); ?>
                         <button class="btn btn-primary"> Add Purchase</button></a>
                 </div>
                 <div class="col-md-10">
-                    <form action="<?php echo base_url(); ?>index.php/purchase/search" method="post">
+                    <form action="<?php echo base_url(); ?>purchase/search" method="get">
                         <div class="input-group col-md-6">
                             <input type="text" name="search" id="search" list="search1" class="form-control "
                                 placeholder="Search By Name" autocomplete='off' required>
@@ -73,9 +73,12 @@ include('header.php'); ?>
                     </thead>
                     <tbody>
                         <?php
-						$cnt=1;
+                        $cnt=1;
 						if(!empty($result))
 						{
+                            // echo "<pre/>";
+                            // print_r($result);
+                            // exit();
 							foreach($result as $row)
 							{
 						?>
@@ -233,7 +236,7 @@ function payment(p, id) {
 }
 
 function dlefunction(id) {
-    var id = "<?php echo base_url();?>index.php/purchase/delete/" + id;
+    var id = "<?php echo base_url();?>/purchase/delete/" + id;
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",

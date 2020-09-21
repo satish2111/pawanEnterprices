@@ -50,15 +50,48 @@ class Sale extends CI_Controller {
 
     public function search()
     {
-          if(!$this->session->userdata('logged_in'))
+            if(!$this->session->userdata('logged_in'))
             {
                  $this->session->set_flashdata('msg', 'Username / Password Invalid');
                 redirect(base_url().'login');  
             }
-             $this->load->model('Read_Model');
-            $config['base_url'] = base_url('sale/index');        
-            $config['total_rows'] = $this->sale->num_row('tblmastersale');      
-            $config['per_page'] = 10;               
+                $findon='';
+                $count='';
+                $finalvalue='';
+                if(($this->input->get('search'))!='')
+                {
+                    $clientnamedata=$this->input->get('search');
+                    $clientnameid=$this->input->get('selectclientid');
+                    $findon='byclient';
+                    $finalvalue=$clientnamedata;
+                    $count=$this->sale->num_row_bycientname($clientnameid);      
+                }
+                else{
+                    $clientnamedata='';
+                }
+                if(($this->input->get('productname'))!='')
+                {
+                    $productnamedata=$this->input->get('productname');
+                    $findon='productname';
+                    $finalvalue=$productnamedata;
+                    $count=$this->sale->num_row_byproductname($productnamedata); 
+                   
+                }
+                else{
+                    $productnamedata='';
+                }
+                $offset = $this->input->get('per_page');
+                if($offset == '' || !$offset) {
+                    $offset = 0;
+                }
+                
+            // $this->load->model('Read_Model');
+            $baseurlpagination = base_url().'sale/search';
+            $config['base_url'] = $baseurlpagination;        
+            $config['total_rows'] = $count;      
+            $config['per_page'] = 5;
+            $config['page_query_string'] = TRUE;  
+            $config['reuse_query_string'] = true;                  
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
             $config['attributes'] = array('class' => 'page-link');   
@@ -79,26 +112,14 @@ class Sale extends CI_Controller {
             $config['num_tag_open'] = '<li>';
             $config['num_tag_close'] = '</li>';
             $this->pagination->initialize($config);
-            if(($this->input->post('search'))!=''){
-            $clientnamedata=$this->input->post('search');
-            }
-            else{
-                $clientnamedata='';
-            }
-            if(($this->input->post('productname'))!=''){
-            $productnamedata=$this->input->post('productname');
-            }
-            else{
-                $productnamedata='';
-            }
+           
             if(isset($clientnamedata) || isset($productnamedata) )
             {
-
                 $clientname=array(
                     'clientnamedata'=> $clientnamedata,
                     'productnamedata'=> $productnamedata
                 );
-                $result=$this->sale->getsearchdata($config['per_page'],$this->uri->segment(3),$clientname);
+                $result=$this->sale->getsearchdata($clientname,$config['per_page'],$offset);
                 $this->load->view('salelist',['result'=>$result]);
             }
             else{

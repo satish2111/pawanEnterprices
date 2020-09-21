@@ -43,7 +43,7 @@ class Read_Model extends CI_Model{
 			->get($tableName);
 			return $ret->row();
 		}
-		public function searchget($tablename,$columnname,$search)
+		public function searchget($tablename,$columnname,$search,$limit,$offset)
 		{
 			
 				$this->db->select('*');

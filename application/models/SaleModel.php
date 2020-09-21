@@ -7,8 +7,20 @@ class SaleModel extends CI_Model {
 	{
 		$date1=date('Y-m-d');
 			$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
-		return $totalRow=$this->db->where('Billdate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
+			return $totalRow=$this->db->where('PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
 
+	}
+	public function num_row_byproductname($productName)
+	{
+		return $counts = $this->db->select('(Fk_Sale_id) as count')
+						 ->where('ProductName',$productName)
+						 ->get('tblsale')->num_rows();
+						 
+	}
+
+	public function num_row_bycientname($clientname)
+	{
+		return $count = $this->db->where('client_id',$clientname)->get('tblmastersale')->num_rows();
 	}
 	public function getdata($limit,$offset)
 		{
@@ -18,12 +30,13 @@ class SaleModel extends CI_Model {
 			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate,s.OutstandingAmt');
 			$this->db->from('tblmastersale s');
 			$this->db->join('tblclient c','s.client_id = c.client_id');
-			$this->db->where('s.Billdate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
+			$this->db->where('s.PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
 			$this->db->limit($limit,$offset);
-				//print_r( $this->db->get()->result());
+			$this->db->order_by('s.Billdate' ,'asc');
+			$this->db->order_by('s.Sale_id' ,'asc');
 				return $this->db->get()->result();
 		}
-		public function getsearchdata($limit,$offset,$clinetname)
+		public function getsearchdata($clinetname,$limit,$offset)
 		{
 			$billNumber=array();
 			if($clinetname['productnamedata']!='')
@@ -176,16 +189,27 @@ public function insert($saletable,$totalbill)
 							$tempsrno++;
 							$finaldone=$this->db->insert('tblsale',$saleinsert[$i]);
 							$forupdatesstatus=$saletable[$i]['Qty']+$saletable[$i]['Free'];
+							
 							for ($x=0; $x <$forupdatesstatus ; $x++)
 							{
-								$selectstock=$this->db->query("SELECT BIllno,min(srno)as srno from tblpurchase where ProductName='".$saleinsert[$i]['ProductName']."' and STATUS='A'");
+								$productnames=$saleinsert[$i]['ProductName'];
+								$billno=$this->db->select('MIN(Billno)as Billno')
+								->where('ProductName',$productnames)
+								->get('tblpurchase')->row_array();
+								$tempbillno=$billno['Billno'];
+								$selectstock=$this->db->query("SELECT min(srno)as srno from tblpurchase where ProductName='".$productnames."' and STATUS='A' and Billno='".$tempbillno."' ");
 								$rows = $selectstock->row_array();
 								$fromarray=array();
 								$fromarray['STATUS']='S';
 								$fromarray['SaleBillNo']=$maxid;
-								$this->db->where('Billno',$rows['BIllno']);
-								$this->db->where('SrNo',$rows['srno']);
-								$this->db->update('tblpurchase',$fromarray);
+								try{
+								$this->db->where('Billno',$tempbillno)->where('SrNo',$rows['srno'])->where('ProductName',$saleinsert[$i]['ProductName'])->update('tblpurchase',$fromarray);
+								}
+								catch(Exception $t)
+								{
+									echo $t;
+									return 'failed';
+								}
 							}
 					}
 				}
@@ -249,10 +273,10 @@ public function insert($saletable,$totalbill)
 		{
 			if($paidornot=='Paid')
 			{
-				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where PaidAmt!='0.00' and TotalAmt!=PaidAmt and  Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,if(OutstandingAmt<=0,TotalAmt,OutstandingAmt) as OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where PaidAmt!='0.00' and TotalAmt!=PaidAmt and  Billdate BETWEEN '".$startdate."' and '".$enddate."' ORDER BY FirstName asc")->result();
 			}
 			else if ($paidornot=='Un-Paid'){
-				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where Billdate BETWEEN '".$startdate."' and '".$enddate."'")->result();
+				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,if(OutstandingAmt<=0,TotalAmt,OutstandingAmt) as OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where Billdate BETWEEN '".$startdate."' and '".$enddate."' and TotalAmt<>PaidAmt ORDER BY FirstName asc")->result();
 			}
 			if(isset($clientReport))
 			{

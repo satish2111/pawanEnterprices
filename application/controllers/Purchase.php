@@ -16,9 +16,16 @@ class Purchase extends CI_Controller {
                  $this->session->set_flashdata('msg', 'Username / Password Invalid');
                 redirect(base_url().'login');  
             }
+            $offset = $this->input->get('per_page');
+            if($offset == '' || !$offset) {
+                $offset = 0;
+            }
             $this->load->model('Read_Model');
-            $config['base_url'] = base_url('purchase/index');        
-            $config['total_rows'] = $this->Purchase->num_row('tblmasterpurchase');      
+            $baseurlpagination = base_url().'purchase/index';
+            $config['base_url'] = $baseurlpagination;
+            $config['total_rows'] = $this->Purchase->num_row('tblmasterpurchase');  
+            $config['page_query_string'] = TRUE;  
+            $config['reuse_query_string'] = true;    
             $config['per_page'] = 10;               
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
@@ -40,7 +47,7 @@ class Purchase extends CI_Controller {
             $config['num_tag_open'] = '<li>';
             $config['num_tag_close'] = '</li>';
             $this->pagination->initialize($config);
-            $result=$this->Purchase->getdata($config['per_page'],$this->uri->segment(3));
+            $result=$this->Purchase->getdata($config['per_page'],$offset);
             if(isset($_SESSION['error'])){
                     unset($_SESSION['error']);
                 }
@@ -109,7 +116,11 @@ class Purchase extends CI_Controller {
                  $this->session->set_flashdata('msg', 'Username / Password Invalid');
                 redirect(base_url().'login');  
             }
-        $name=$this->input->post('search');
+        $name=$this->input->get('search');
+        $offset = $this->input->get('per_page');
+        if($offset == '' || !$offset) {
+            $offset = 0;
+        }
 
         if($name){
             $id=$this->Purchase->checkusergetid($name);
@@ -120,9 +131,12 @@ class Purchase extends CI_Controller {
                 if(isset($_SESSION['error'])){
                     unset($_SESSION['error']);
                 }
-                $config['base_url'] = base_url('purchase/index');        
+                $baseurlpagination = base_url().'purchase/search';
+                $config['base_url'] = $baseurlpagination;        
                 $config['total_rows'] = $this->Purchase->num_row_search('tblmasterpurchase',$final);      
-                $config['per_page'] = 10;               
+                $config['per_page'] = 10;      
+                $config['page_query_string'] = TRUE;  
+                $config['reuse_query_string'] = true;       
                 $config['full_tag_open'] = '<ul class="pagination">';        
                 $config['full_tag_close'] = '</ul>';  
                 $config['attributes'] = array('class' => 'page-link');   
@@ -143,7 +157,7 @@ class Purchase extends CI_Controller {
                 $config['num_tag_open'] = '<li>';
                 $config['num_tag_close'] = '</li>';
                 $this->pagination->initialize($config);
-                $result=$this->Purchase->serachlist($final,$config['per_page'],$this->uri->segment(3));
+                $result=$this->Purchase->serachlist($final,$config['per_page'],$offset);
                 $this->load->view('purchaselist',['result'=>$result]);
               }
               else{

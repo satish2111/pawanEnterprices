@@ -15,6 +15,17 @@ include('header.php'); ?>
 {
     margin: 0.2em auto 0!important;
 }
+.size{
+    width: 107px;
+}
+.size1{
+    width:112px;
+}
+
+
+.table-responsive{
+    overflow-x: hidden;
+}
 </style>
 <div class="container">
     <div class="row mt-5">
@@ -38,10 +49,11 @@ include('header.php'); ?>
                         <button class="btn btn-primary"> Add Sale</button></a>
                 </div>
                 <div class="col-md-10">
-                    <form action="<?php echo base_url(); ?>sale/search" method="post">
+                    <form action="<?php echo base_url(); ?>sale/search" method="get" onsubmit="return ValidationEvent()">
                         <div class=" input-group col-md-4">
                             <input type="text" name="search" id="search" list="search1" class="form-control "
-                                placeholder="Search By Name" autocomplete='off'>
+                                placeholder="Search By Name" autocomplete='off' require>
+                                <input type="hidden" name="selectclientid" id='selectclientid' value="">
                             <datalist id='search1' name='search1'>
                                 <?php
 							$this->load->model('SaleModel', 'sale');
@@ -57,7 +69,7 @@ include('header.php'); ?>
                         </div>
                         <div class=" input-group col-md-4">
                             <input type="text" name="productname" list='productname1' value="" id='productname'
-                                placeholder="Product Name" class="form-control">
+                                placeholder="Product Name" class="form-control" require>
                             <datalist id='productname1' name='productname1'>
                                 <?php
 							$this->load->model('SaleModel', 'sale');
@@ -75,7 +87,7 @@ include('header.php'); ?>
                             </datalist>
                         </div>
                         <div class="input-group col-md-3" style="float: right;margin-right: 6%;">
-                            <input type="submit" value="search" class="btn btn-success" name="save" /> &nbsp;&nbsp;
+                            <input type="submit" value="search" class="btn btn-success" name="save"  id=btnsearch/> &nbsp;&nbsp;
                             <a href="<?php echo base_url().'sale' ?>" class="btn btn-warning">Clear</a>
                         </div>
                     </form>
@@ -87,7 +99,7 @@ include('header.php'); ?>
         <div class="table-responsive mt-3">
             <table id="mytable" class="table table-bordred table-striped">
                 <thead>
-                    <th>#</th>
+                    <!-- <th>#</th> -->
                     <th style='display: none;'>id</th>
                     <th>Bill No</th>
                     <th>Bill Date</th>
@@ -110,14 +122,14 @@ include('header.php'); ?>
 						{
 					?>
                     <tr id="<?php echo htmlentities($row->Sale_id); ?>">
-                        <td><?php echo htmlentities($cnt);?></td>
+                        <!-- <td><?php echo htmlentities($cnt);?></td> -->
                         <td style='display: none;'><?php echo htmlentities($row->Sale_id);?></td>
                         <td><?php echo htmlentities($row->Sale_id);?></td>
-                        <td><?php echo htmlentities(date('d-m-Y',strtotime($row->Billdate)));?></td>
+                        <td class='size'><?php echo htmlentities(date('d-m-Y',strtotime($row->Billdate)));?></td>
                         <td><?php echo htmlentities($row->FirstName.' '.$row->LastName);?></td>
                         <td><?php echo htmlentities($row->TotalAmt);?></td>
                         <td><?php echo htmlentities($row->PaidAmt);?></td>
-                        <td><?php echo htmlentities(date('d-m-Y',strtotime($row->lastpaiddate)));?></td>
+                        <td class='size1'><?php echo htmlentities(date('d-m-Y',strtotime($row->lastpaiddate)));?></td>
                         <td><?php echo htmlentities($row->OutstandingAmt);?></td>
                         <?php if(floatval($row->TotalAmt)==floatval($row->PaidAmt))
                         {
@@ -183,6 +195,7 @@ include('header.php'); ?>
             </table>
             <div style="margin-left:2%;">
                 <?php echo $this->pagination->create_links(); ?>
+                
             </div>
         </div>
     </div>
@@ -190,10 +203,38 @@ include('header.php'); ?>
 </div>
 <?php include('footer.php'); ?>
 <script type="text/javascript">
+ function ValidationEvent() {
+     var clientname=document.getElementById("search").value;
+     var productname=document.getElementById("productname").value;
+     if(clientname=='' && productname=='')
+     {
+        // alert('hi');
+        Swal.fire({
+                    title: 'Error!',
+                    text: "Please Select Client name Or Product Name",
+                    icon: 'error',
+                    timer: 2000,
+                    timerProgressBar: true,
+                        })
+        return false;
+        
+     }
+ };
+
 $(document).ready(function() {
     $('#swal-input1').blur(function() {
         console.log('tet');
     })
+    $("#search").blur(function() {
+        $("#search option").each(function(i, el) {
+                            data[$(el).data("value")] = $(el).val();
+        });
+        var client = $('#search').val();
+        var clientId = $('#search1 [value="' + client + '"]').data('value');
+        document.getElementById("selectclientid").value=clientId;
+    });
+
+    
 });
 function dlefunction(id) {
     var id = "<?php echo base_url();?>index.php/sale/delete/" + id;
