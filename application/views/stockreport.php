@@ -44,7 +44,7 @@ include('header.php'); ?>
                 <button class="btn btn-primary" onclick='printContent(mytable)'>Print</button>
             </div>
             <div class="table-responsive mt-3 blocks" id='mytable'>
-                <h1>Current Stock Till Date:<?php echo date("d-m-Y") ?></h1>
+                <h1>Current Stock Till Date : <?php echo date("d-m-Y") ?></h1>
                 <table class="table table-bordred table-striped block-col">
                     <thead>
                         <th>#</th>

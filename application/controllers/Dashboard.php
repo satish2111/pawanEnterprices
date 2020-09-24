@@ -12,18 +12,17 @@ class Dashboard extends CI_Controller {
         $this->load->model('DashboardModel', 'Dashboard');
         $this->load->model('SaleModel', 'Sale');
     }
-    public function index() {
+      public function index() {
     	
 			if(!$this->session->userdata('logged_in'))
 	    	{
 	    		 $this->session->set_flashdata('msg', 'Username / Password Invalid');
 	            redirect(base_url().'login');  
 	    	}
-
-             $this->load->model('Read_Model');
+            $this->load->model('Read_Model');
             $config['base_url'] = base_url('dashboard/index');        
-            $config['total_rows'] = $this->Read_Model->num_row('tblmasterpurchase');      
-            $config['per_page'] = 10;               
+            $config['total_rows'] = $this->Read_Model->num_row('tblmastersale');      
+            $config['per_page'] = 5;               
             $config['full_tag_open'] = '<ul class="pagination">';        
             $config['full_tag_close'] = '</ul>';  
             $config['attributes'] = array('class' => 'page-link');   
@@ -49,7 +48,11 @@ class Dashboard extends CI_Controller {
                     unset($_SESSION['error']);
                 }
              $resultsale=$this->Sale->getdata($config['per_page'],$this->uri->segment(3));
-            $final=array($result,$resultsale);
+             $TotalTotaySale=$this->Dashboard->todayTotalSale();
+             $todayTotalPurchase=$this->Dashboard->todayTotalPurchase();
+             
+            $final=array($result,$resultsale,$TotalTotaySale[0],$todayTotalPurchase[0]);
+            
             $this->load->view('dashboard',['final'=>$final]);
 
     }

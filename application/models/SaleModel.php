@@ -30,7 +30,7 @@ class SaleModel extends CI_Model {
 			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate,s.OutstandingAmt');
 			$this->db->from('tblmastersale s');
 			$this->db->join('tblclient c','s.client_id = c.client_id');
-			$this->db->where('s.PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
+			$this->db->where('s.Billdate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
 			$this->db->limit($limit,$offset);
 			$this->db->order_by('s.Billdate' ,'asc');
 			$this->db->order_by('s.Sale_id' ,'asc');
@@ -500,5 +500,7 @@ public function insert($saletable,$totalbill)
 					
 				}
 		}
+
+		
 
 }

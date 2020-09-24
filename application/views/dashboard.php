@@ -30,7 +30,12 @@ tr:nth-child(even) {
 			<hr/>
 		</div>
 		<div class="col-lg-6 col-md-12">
-			<h1 class="red">Today Purchase</h1>
+			<h3 class="red">Today Purchase :
+			<?php 
+					if(!empty($final[3]))
+					{echo $final[3]->TotalAmt;}
+			?>
+			</h3>
 			<table>
 				<thead>
 					<tr>
@@ -67,9 +72,17 @@ tr:nth-child(even) {
 					?>
 				</tbody>
 			</table>
+			
 		</div>
 		<div class="col-lg-6 col-md-12">
-			<h1 class="green">Today Sales</h1>
+
+			<h3 class="green">Today Sales : 
+			<?php 
+					if(!empty($final[2]))
+					{echo $final[2]->TotalAmt;}
+			?>
+			</h3>
+			
 			<table>
 				<thead>
 					<tr>
@@ -106,6 +119,10 @@ tr:nth-child(even) {
 					?> 
 				</tbody>
 			</table>
+			
+		</div>
+		<div class="col-lg-12 col-sm-12 mt-3">
+		<?php echo $this->pagination->create_links(); ?>
 		</div>
 	</div>
 </div>

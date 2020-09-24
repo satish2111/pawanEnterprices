@@ -99,7 +99,7 @@ include('header.php'); ?>
         <div class="table-responsive mt-3">
             <table id="mytable" class="table table-bordred table-striped">
                 <thead>
-                    <!-- <th>#</th> -->
+                    <th style='display:none'>#</th>
                     <th style='display: none;'>id</th>
                     <th>Bill No</th>
                     <th>Bill Date</th>
@@ -122,7 +122,7 @@ include('header.php'); ?>
 						{
 					?>
                     <tr id="<?php echo htmlentities($row->Sale_id); ?>">
-                        <!-- <td><?php echo htmlentities($cnt);?></td> -->
+                        <td style='display:none'><?php echo htmlentities($cnt);?></td>
                         <td style='display: none;'><?php echo htmlentities($row->Sale_id);?></td>
                         <td><?php echo htmlentities($row->Sale_id);?></td>
                         <td class='size'><?php echo htmlentities(date('d-m-Y',strtotime($row->Billdate)));?></td>
@@ -195,7 +195,6 @@ include('header.php'); ?>
             </table>
             <div style="margin-left:2%;">
                 <?php echo $this->pagination->create_links(); ?>
-                
             </div>
         </div>
     </div>
@@ -292,7 +291,7 @@ function payment(p, id) {
             html: '<label for="nameField" class="" style="color:red;float: left;" >Total Bill Amount :- </label>' +
                   '<label for="nameField" class="" style="color:green;float: left;" >&nbsp;'+ billAmt+'</label>'+'<br/><br/>'+
                   '<label for="nameField" class="" style="color:red;float: left;" >Total Paid Amount :- </label>' +
-                  '<label for="nameField" class="" id="lbtPaidAmt" style="color:green;float: left;" >&nbsp;'+ paidAmt+'</label>'+'<br/><br/>'+
+                  '<label for="nameField" class="" id="lbtPaidAmt" style="color:green;float: left;">&nbsp;'+ paidAmt+'</label>'+'<br/><br/>'+
                   '<label for="nameField" class="" style="color:red;float: left;" >Total Outstanding Amount :- </label>' +
                   '<label for="nameField" class="" style="color:green;float: left;" >&nbsp;'+ outstandingAmt+'</label>'+'<br/><br/>'+
                   '<label for="nameField" class="col-sm-12" style="margin-top:0em; padding:0rem;color:green">Now Pay</label>' +
@@ -316,11 +315,17 @@ function payment(p, id) {
             cancelButtonText: '<i class="fa fa-thumbs-down"></i> Cancel',
             cancelButtonAriaLabel: 'Thumbs down',
             preConfirm: () => {
+                if (document.getElementById('swal-input1').value) {
+                // Handle return value 
                 return [
                     document.getElementById('swal-input1').value,
                     document.getElementById('paiddate').value,
                     document.getElementById('swal-input2').value
                 ]
+                } else {
+                    Swal.showValidationMessage('Pay Now Is Blank')   
+                }
+                
             }
         })
 

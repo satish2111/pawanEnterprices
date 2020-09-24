@@ -35,7 +35,7 @@ class PurchaseModel extends CI_Model {
 			$this->db->select('s.suppler_id,s.FirstName,p.pur_id,p.billno,p.billdate,p.total_amt,p.amt_paid,p.paiddate,p.paymentmode');
 			$this->db->from('tblmasterpurchase p');
 			$this->db->join('tblsuppler s','p.suppler_id=s.suppler_id');
-			$this->db->where('p.PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
+			$this->db->where('p.BillDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
 			$this->db->limit($limit,$offset);
 			return $this->db->get()->result();	
 		}
@@ -335,7 +335,7 @@ else{
 		//from  where  GROUP BY  ORDER BY  
 		$Finalresport=$this->db->select('DISTINCT (ProductName),SUM(Qty)as Qty,MRP,(SUM(Qty)*MRP) Total')
 						 ->where('Status','A')->from('tblpurchase')
-						 ->group_by('ProductName')->order_by('ProductName','ASC')->get()->result();
+						 ->group_by('ProductName')->order_by('Qty','DESC')->order_by('ProductName','ASC')->get()->result();
 						 return $Finalresport;
 
 	}
