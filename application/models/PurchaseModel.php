@@ -377,4 +377,22 @@ else{
 		
 			return $data;
 	}
+	public function reportPurchaseFromTo($startdate, $enddate,$supplername)
+	{
+		// print_r($supplername);
+		// print_r($startdate);
+		// print_r($enddate);
+		if($supplername!='')
+		{
+			$this->db->where('p.suppler_id',$supplername);
+		}
+		$results=$this->db->select('BillNo,BillDate,CONCAT(FirstName," ",LastName) as Name,Total_Amt,PaidDate,Amt_Paid,PaymentMode')
+						  ->from('tblmasterpurchase p')
+						  ->join('tblsuppler s','p.suppler_id=s.suppler_id')
+						   ->where('p.BillDate BETWEEN "'.date('Y-m-d', strtotime($startdate)). '" and "'. date('Y-m-d', strtotime($enddate)).'"')
+						   ->get()->result();
+						   return $results;
+
+
+	}
 }

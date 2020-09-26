@@ -109,7 +109,6 @@ public function productDatalist()
 		}
 		else{
 			$this->session->set_flashdata('error', 'No Qty Aavailable For Sale<br/> Please Add Purchase First!!!!');
-
 		}
 }
 public function checkuser($clientname)
@@ -195,6 +194,7 @@ public function insert($saletable,$totalbill)
 								$productnames=$saleinsert[$i]['ProductName'];
 								$billno=$this->db->select('MIN(Billno)as Billno')
 								->where('ProductName',$productnames)
+								->where('STATUS',"A")
 								->get('tblpurchase')->row_array();
 								$tempbillno=$billno['Billno'];
 								$selectstock=$this->db->query("SELECT min(srno)as srno from tblpurchase where ProductName='".$productnames."' and STATUS='A' and Billno='".$tempbillno."' ");

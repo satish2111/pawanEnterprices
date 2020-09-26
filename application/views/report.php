@@ -203,7 +203,7 @@ $(document).ready(function() {
                     if (result['status'] == "success") {
                         document.getElementById("total").style.display = "block";
                         document.getElementById("mytable").style.display = "none";
-                    document.getElementById("print").style.display = "none";
+                        document.getElementById("print").style.display = "none";
                         
                         document.getElementById('labelstartdate').innerHTML = getdateformat(
                             startdate);
@@ -219,7 +219,6 @@ $(document).ready(function() {
                             'purchasePaid']['PPaid'];
                         document.getElementById('purchaseOutstanding').innerHTML = result[
                             'purchaseOutstanding']['TotalAmt'];
-
 
                         document.getElementById('saleCost').innerHTML = result[
                             'SaleWiseTotal']['Cost'];    

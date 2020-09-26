@@ -258,9 +258,40 @@ class Purchase extends CI_Controller {
 			
             $this->load->view('purchasereport',['returnData'=>$returnData]);
         }
-       
+    }
 
-
+    public function purchaseFromToReport()
+    {
+        $this->load->view('PurchaseFormto');
+    }
+    public function reportpurchasefromto()
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+       $startdate=$this->input->post('startdate');
+       $enddate=$this->input->post('enddate');
+       if($startdate!=$enddate)
+       {
+            if(($this->input->post('supplername'))!='')
+            {
+                $supplername=$this->input->post('supplername');
+                $result=$this->Purchase->reportPurchaseFromTo($startdate, $enddate,$supplername);
+            }
+            else{
+                $supplername='';
+                $result=$this->Purchase->reportPurchaseFromTo($startdate, $enddate,$supplername);
+            }
+            $returnData =  ['supplername' => $supplername,'startdate'=>$startdate,'enddate'=>$enddate,'result'=>$result];
+            
+            $this->load->view('PurchaseFormto',['returnData'=>$returnData]);
+        }
+        else{
+            $this->session->set_flashdata('error', 'Please select from and to Date');
+            $this->load->view('PurchaseFormto');
+        }
     }
 
 }

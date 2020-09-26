@@ -30,12 +30,17 @@ date_default_timezone_set('Asia/Calcutta'); ?>
                         <li>
                             <a class='prett' href='#' ?>report</a>
                             <ul class='menus'>
-                                
                                 <li>
                                     <a class='' href='<?php echo base_url().'Purchase/stockreport' ?>'>Current Stock Report</a>
                                 </li>
                                 <li>
                                     <a class='' href='<?php echo base_url().'sale/report' ?>'>Party Wise Report</a>
+                                </li>
+                                <li>
+                                    <a class='' href='<?php echo base_url().'Purchase/purchaseFromToReport' ?>'>Purchase Report</a>
+                                </li>
+                                <li>
+                                    <a class='' href='<?php echo base_url().'sale/salerFromTOReport' ?>'>Sale Report</a>
                                 </li>
                                 <li>
                                     <a class='' href='<?php echo base_url().'Purchase/purchasereport' ?>'>Suppler Report</a>
