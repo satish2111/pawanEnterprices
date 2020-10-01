@@ -2,10 +2,10 @@
 $title='Purchase';
 include('header.php'); ?>
 <style>
-    .fordisabled {
-    pointer-events: none!important;
-    cursor: default!important;
-    color: #b58d8d!important;
+.fordisabled {
+    pointer-events: none !important;
+    cursor: default !important;
+    color: #b58d8d !important;
 }
 </style>
 <div class="container">
@@ -105,8 +105,9 @@ include('header.php'); ?>
 								echo  anchor("purchase/getdetails/{$row->pur_id}/{$row->FirstName}",' Edit','class="fordisabled fas fa-edit btn-xs " aria-hidden="true"')?>
                             </td>
                             <td>
-                                <button onclick="dlefunction(<?php echo $row->pur_id ?>)" disabled class="btn-xs fordisabled btndelete">
-                                <span class="fas fa-trash"> Delete</button>
+                                <button onclick="dlefunction(<?php echo $row->pur_id ?>)" disabled
+                                    class="btn-xs fordisabled btndelete">
+                                    <span class="fas fa-trash"> Delete</button>
                             </td>
                             <?php
 
@@ -127,7 +128,6 @@ include('header.php'); ?>
                             </td>
                             <?php
                              } ?>
-
 
                         </tr>
                         <?php
@@ -265,7 +265,7 @@ function dlefunction(id) {
                     } else if (data.status == "sales") {
                         Swal.fire({
                             title: 'Error!',
-                            text: "your can't delete that bill because sum products are saled.",
+                            text: "your can't delete that bill because some products are sold.",
                             icon: 'error',
                             timer: 6000,
                             timerProgressBar: true,

@@ -41,21 +41,16 @@ class SaleModel extends CI_Model {
 			$billNumber=array();
 			if($clinetname['productnamedata']!='')
 			{
-				
 				$billnos=$this->db->select('DISTINCT (Fk_Sale_id)')->from('tblsale')
 				->where('ProductName',$clinetname['productnamedata'])->get()->result_array();
 				
 				foreach($billnos as $key=>$val)
 				{
-
 						$billNumber[$key]=$val['Fk_Sale_id'];
 				}
+				$this->db->where_in('Sale_id',$billNumber);
 			}
-			
-			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate,s.OutstandingAmt');
-			$this->db->from('tblmastersale s');
-			$this->db->join('tblclient c','s.client_id = c.client_id');
-			if(empty($billNumber))
+			else if(empty($billNumber) && $clinetname['clientnamedata']!='')
 			{
 				$firtname=explode( ' ', $clinetname['clientnamedata'] );
 				$first=$firtname[0];
@@ -69,10 +64,14 @@ class SaleModel extends CI_Model {
 				$this->db->where('c.FirstName',$first);
 				$this->db->where('c.LastName',$lastname);
 			}
-			else
+			else if($clinetname['billno']!='')
 			{
-				$this->db->where_in('Sale_id',$billNumber);
+				$this->db->where('Sale_id',$clinetname['billno']);
+				
 			}
+			$this->db->select('c.client_id,c.FirstName,c.LastName,s.Sale_id,s.Billdate,s.TotalAmt,s.PaidAmt,s.lastpaiddate,s.OutstandingAmt');
+			$this->db->from('tblmastersale s');
+			$this->db->join('tblclient c','s.client_id = c.client_id');
 			$this->db->limit($limit,$offset);
 			return $this->db->get()->result();
 		}
@@ -501,6 +500,85 @@ public function insert($saletable,$totalbill)
 				}
 		}
 
-		
+		public function reportSaleFromTo($startdate,$enddate,$client)
+		{
+			if($client!='')
+			{
+				$this->db->where('s.client_id',$client);
+			}
+			$dataresults=$this->db->select('Sale_id as BillNo, Billdate,s.client_id,CONCAT(FirstName," ",LastName) as Name,TotalAmt,lastpaiddate,PaidAmt,OutstandingAmt')
+						  ->from('tblmastersale s')
+						  ->join('tblclient c','s.client_id=c.client_id')
+						   ->where('s.BillDate BETWEEN "'.date('Y-m-d', strtotime($startdate)). '" and "'. date('Y-m-d', strtotime($enddate)).'"')
+						   ->get()->result();
+						   return $dataresults;
+
+		}
+
+		public function billdetail($billno)
+		{	
+			$dataresult=$this->db->select('Srno,ProductName,Qty,Free,mrp,productwisegross')
+								 ->from('tblsale')->where('Fk_Sale_id',$billno)
+								 ->get()->result();
+								return $dataresult;
+		}
+
+		public function billNumberMissing()
+		{					 
+			$dataresult=$this->db->query("SELECT a.Sale_id as Missing_before_this from tblmastersale a LEFT join tblmastersale b on b.Sale_id=a.Sale_id-1 WHERE b.Sale_id IS Null ORDER by a.Sale_id ASC")->result();
+			return $dataresult;
+		}
+
+		public function stocksalecompared()
+		{
+			$productandqty=$this->db->select('DISTINCT(ProductName), SUM(Qty) as purchaseQty')
+							//->where('ProductName','7562 BATTERY')
+							->from('tblpurchase')->group_by('ProductName')
+							->ORDER_by('ProductName','asc')->get()->result_array();
+							$billNumber='';
+							$purchasebillno='';
+							foreach($productandqty as $key=>$val)
+							{
+								
+								$Stockavailable[]=$this->db->select('DISTINCT(ProductName), IFNULL(SUM(Qty),0) as purchaseavailableQty')
+								->from('tblpurchase')->group_by('ProductName')->where('ProductName',$val['ProductName'])->where('Status','A')
+								->ORDER_by('ProductName','asc')->get()->result();
+
+								$saletotal[]= $this->db->select('DISTINCT(ProductName),IFNULL(sum(Qty),0) as TotalSale')->
+								from('tblsale')->group_by('ProductName')->where('ProductName',$val['ProductName'])
+								->ORDER_by('ProductName','asc')->get()->result();
+
+								$billnos=$this->db->select('DISTINCT IFNULL(Fk_Sale_id, 0) as Fk_Sale_id ')->from('tblsale')
+								->where('ProductName',$val['ProductName'])->get()->result_array();
+
+								foreach($billnos as $key=>$values)
+								{
+									if($values!='')
+									{
+										$billNumber.=$values['Fk_Sale_id'].',';
+									}
+								}
+								$saleBillNoAsPerProduct[$val['ProductName']]=trim($billNumber,',');
+								$billNumber='';
+
+								$purchasbill=$this->db->select('DISTINCT IFNULL(Billno, 0) as Billno')->from('tblpurchase')
+								->where('ProductName',$val['ProductName'])->get()->result_array();
+
+								foreach($purchasbill as $key=>$purBill)
+								{
+									$purchasebillno.=$purBill['Billno'].',';
+								}
+								$purchaseBillNoAsPerProduct[$val['ProductName']]=trim($purchasebillno,',');
+								$purchasebillno='';
+
+							}
+							echo'<pre>';
+							$fulldata=(object)['PurchaseQty' => $productandqty,'PurchaseAvailable'=>$Stockavailable,'Sale'=>$saletotal,'saleBillNoAsPerProduct'=>$saleBillNoAsPerProduct,'purchaseBillNoAsPerProduct'=>$purchaseBillNoAsPerProduct];
+							print_r($fulldata);
+							//$merge = array_merge($productandqty,$Stockavailable,$saletotal,$saleBillNoAsPerProduct,$purchaseBillNoAsPerProduct,$purchaseBillNoAsPerProduct);
+							//print_r($merge);
+			
+
+		}
 
 }

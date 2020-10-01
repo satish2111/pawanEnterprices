@@ -37,14 +37,15 @@ class PurchaseModel extends CI_Model {
 			$this->db->join('tblsuppler s','p.suppler_id=s.suppler_id');
 			$this->db->where('p.BillDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"');
 			$this->db->limit($limit,$offset);
+			
 			return $this->db->get()->result();	
+			//print_r( $this->db->get()->result());	
 		}
 		public function num_row($tablename)
 		{
 			$date1=date('Y-m-d');
 				$end_date=date('Y-m-d',strtotime($date1 . "+1 days"));
 			return $totalRow=$this->db->where('PostingDate BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($end_date)).'"')->get($tablename)->num_rows();
-
 		}
 
 	function insert($purchasestockwise,$totalbill)
@@ -123,29 +124,30 @@ class PurchaseModel extends CI_Model {
 
 	function delete($id)
 	{
-$checkstatus=$this->db->select('Pur_fk_Id')->where('Status','S')->where('Pur_fk_Id',$id)->get('tblpurchase');
-if($checkstatus->num_rows()>0)
-{
-	return 'sales';
-}
-else{
-		$sql_query=$this->db->where('Pur_fk_Id', $id)
-		                ->delete('tblpurchase'); 
-		           if($sql_query)
-		           {
-			           	$sql_querynew=$this->db->where('Pur_Id', $id)
-			                ->delete('tblmasterpurchase'); 
-						if($sql_querynew)
+		$checkstatus=$this->db->select('Pur_fk_Id')->where('Status','S')->where('Pur_fk_Id',$id)->get('tblpurchase');
+		
+		if($checkstatus->num_rows()>0)
+		{
+			return 'sales';
+		}
+		else{
+				$sql_query=$this->db->where('Pur_fk_Id', $id)
+								->delete('tblpurchase'); 
+						if($sql_query)
 						{
-							$this->session->set_flashdata('success', 'Record delete successfully');
-						 	return 'success';
+								$sql_querynew=$this->db->where('Pur_Id', $id)
+									->delete('tblmasterpurchase'); 
+								if($sql_querynew)
+								{
+									$this->session->set_flashdata('success', 'Record delete successfully');
+									return 'success';
+								}
+							}	
+					else{
+							$this->session->set_flashdata('error', 'Somthing went worng. Error!!');
+							return 'failed';
 						}
-					}	
-			else{
-					$this->session->set_flashdata('error', 'Somthing went worng. Error!!');
-				 	return 'failed';
-				}
-			}
+					}
 	}
 
 	function checkuser($supplername)
@@ -386,13 +388,20 @@ else{
 		{
 			$this->db->where('p.suppler_id',$supplername);
 		}
-		$results=$this->db->select('BillNo,BillDate,CONCAT(FirstName," ",LastName) as Name,Total_Amt,PaidDate,Amt_Paid,PaymentMode')
+		$results=$this->db->select('BillNo,p.suppler_id,BillDate,CONCAT(FirstName," ",LastName) as Name,Total_Amt,PaidDate,Amt_Paid,PaymentMode')
 						  ->from('tblmasterpurchase p')
 						  ->join('tblsuppler s','p.suppler_id=s.suppler_id')
 						   ->where('p.BillDate BETWEEN "'.date('Y-m-d', strtotime($startdate)). '" and "'. date('Y-m-d', strtotime($enddate)).'"')
 						   ->get()->result();
 						   return $results;
-
-
 	}
+	public function billdetail($billno)
+	{	
+		$dataresult=$this->db->select('ProductName,sum(Qty) as Qty,Cost,MRP')
+							 ->from('tblpurchase')->where('billno',$billno)
+							 ->group_by("ProductName,Cost,MRP ")
+							 ->get()->result();
+							return $dataresult;
+	}
+
 }

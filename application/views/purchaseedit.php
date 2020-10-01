@@ -242,7 +242,7 @@ include('header.php'); ?>
                         <td class="cost"><?php echo htmlentities($row->Cost);?></td>
                         <td class="mrp"><?php echo htmlentities($row->MRP);?></td>
                         <td class="gross"><?php echo htmlentities($row->gross);?></td>
-                        <td><a href="javascript:void(0);" class="remCF">
+                        <td><a href="javascript:void(0);" class="<?php echo $row->Status=='S'? '' : 'remCF'; ?> ">
                                 <span class="fas fa-trash"> Remove</a></td>
                         <td class="status" style="display:none;">
                             <?php echo htmlentities($row->Status);?></td>

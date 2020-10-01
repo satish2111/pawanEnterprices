@@ -262,6 +262,14 @@ class Purchase extends CI_Controller {
 
     public function purchaseFromToReport()
     {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        if(isset($_SESSION['error'])){
+            unset($_SESSION['error']);
+        }
         $this->load->view('PurchaseFormto');
     }
     public function reportpurchasefromto()
@@ -275,15 +283,19 @@ class Purchase extends CI_Controller {
        $enddate=$this->input->post('enddate');
        if($startdate!=$enddate)
        {
-            if(($this->input->post('supplername'))!='')
+            if(($this->input->post('supplerid'))!='')
             {
                 $supplername=$this->input->post('supplername');
-                $result=$this->Purchase->reportPurchaseFromTo($startdate, $enddate,$supplername);
+                $supplerid=$this->input->post('supplerid');
+                $result=$this->Purchase->reportPurchaseFromTo($startdate, $enddate,$supplerid);
             }
             else{
                 $supplername='';
-                $result=$this->Purchase->reportPurchaseFromTo($startdate, $enddate,$supplername);
+                $supplerid='';
+                $result=$this->Purchase->reportPurchaseFromTo($startdate, $enddate,$supplerid);
             }
+            if(isset($_SESSION['error'])){
+                unset($_SESSION['error']);}
             $returnData =  ['supplername' => $supplername,'startdate'=>$startdate,'enddate'=>$enddate,'result'=>$result];
             
             $this->load->view('PurchaseFormto',['returnData'=>$returnData]);
@@ -292,6 +304,20 @@ class Purchase extends CI_Controller {
             $this->session->set_flashdata('error', 'Please select from and to Date');
             $this->load->view('PurchaseFormto');
         }
+    }
+    public function billdetail()
+    {    
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        $billno=$this->input->post('BillNo');
+        $dataresult=$this->Purchase->billdetail($billno);
+        $this->output->set_content_type('application/json');
+        echo json_encode(array('status'  => $dataresult)); 
+        //$this->load->view('saleFromTo',$dataresult);
+
     }
 
 }

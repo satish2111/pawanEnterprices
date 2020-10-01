@@ -31,22 +31,32 @@ date_default_timezone_set('Asia/Calcutta'); ?>
                             <a class='prett' href='#' ?>report</a>
                             <ul class='menus'>
                                 <li>
-                                    <a class='' href='<?php echo base_url().'Purchase/stockreport' ?>'>Current Stock Report</a>
+                                    <a class='' href='<?php echo base_url().'Purchase/stockreport' ?>'>Current Stock
+                                        Report</a>
+                                </li>
+                                <li>
+                                    <a class='' href='<?php echo base_url().'sale/missingbill' ?>'>Missing Bill No.
+                                        Report</a>
                                 </li>
                                 <li>
                                     <a class='' href='<?php echo base_url().'sale/report' ?>'>Party Wise Report</a>
                                 </li>
                                 <li>
-                                    <a class='' href='<?php echo base_url().'Purchase/purchaseFromToReport' ?>'>Purchase Report</a>
+                                    <a class='' href='<?php echo base_url().'Purchase/purchaseFromToReport' ?>'>Purchase
+                                        Report</a>
                                 </li>
                                 <li>
-                                    <a class='' href='<?php echo base_url().'sale/salerFromTOReport' ?>'>Sale Report</a>
+                                    <a class='' href='<?php echo base_url().'sale/saleFromTOReport' ?>'>Sale Report</a>
                                 </li>
                                 <li>
-                                    <a class='' href='<?php echo base_url().'Purchase/purchasereport' ?>'>Suppler Report</a>
+                                    <a class='' href='<?php echo base_url().'Purchase/purchasereport' ?>'>Suppler
+                                        Report</a>
                                 </li>
                                 <li>
-                                    <a class='' href='<?php echo base_url().'Sale/Details' ?>'>Sale Detail Payment</a>
+                                    <a class='' href='<?php echo base_url().'Sale/Details' ?>'>Sale Payment Detail</a>
+                                </li>
+                                <li>
+                                    <a class='' href='<?php echo base_url().'Sale/compared' ?>'>Stock and Sale compared</a>
                                 </li>
                             </ul>
                         </li>

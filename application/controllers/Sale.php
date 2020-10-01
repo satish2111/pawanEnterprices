@@ -58,6 +58,9 @@ class Sale extends CI_Controller {
                 $findon='';
                 $count='';
                 $finalvalue='';
+                $productnamedata='';
+                $clientnamedata='';
+                $billno='';
                 if(($this->input->get('search'))!='')
                 {
                     $clientnamedata=$this->input->get('search');
@@ -66,19 +69,24 @@ class Sale extends CI_Controller {
                     $finalvalue=$clientnamedata;
                     $count=$this->sale->num_row_bycientname($clientnameid);      
                 }
-                else{
-                    $clientnamedata='';
-                }
-                if(($this->input->get('productname'))!='')
+                else if(($this->input->get('productname'))!='')
                 {
                     $productnamedata=$this->input->get('productname');
                     $findon='productname';
                     $finalvalue=$productnamedata;
                     $count=$this->sale->num_row_byproductname($productnamedata); 
-                   
                 }
-                else{
-                    $productnamedata='';
+                else if(($this->input->get('billno'))!='')
+                {
+                    $billno=$this->input->get('billno');
+                    $findon='Sale_id';
+                    $finalvalue=$billno;
+                }
+                else {
+                    $result='';
+                    $this->session->set_flashdata('error', 'Something went worng. Try again with valid details !!!!');
+                    $this->load->view('salelist',['result'=>$result]);
+                    return;
                 }
                 $offset = $this->input->get('per_page');
                 if($offset == '' || !$offset) {
@@ -113,11 +121,12 @@ class Sale extends CI_Controller {
             $config['num_tag_close'] = '</li>';
             $this->pagination->initialize($config);
            
-            if(isset($clientnamedata) || isset($productnamedata) )
+            if(isset($clientnamedata) || isset($productnamedata) || isset($billno) )
             {
                 $clientname=array(
                     'clientnamedata'=> $clientnamedata,
-                    'productnamedata'=> $productnamedata
+                    'productnamedata'=> $productnamedata,
+                    'billno'=>$billno
                 );
                 $result=$this->sale->getsearchdata($clientname,$config['per_page'],$offset);
                 $this->load->view('salelist',['result'=>$result]);
@@ -313,6 +322,11 @@ class Sale extends CI_Controller {
 
     public function partyWiseDetail()
     {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
         $startdate=$this->input->post('stardate');
 		$enddate=$this->input->post('enddate');
         $client=$this->input->post('Client');
@@ -322,7 +336,7 @@ class Sale extends CI_Controller {
             $this->load->view('partydetailwisereport');
         }
         else if($client=='')
-        {  
+        {   
             $this->session->set_flashdata('error', "Please select the Client Name");
             $this->load->view('partydetailwisereport');
         }
@@ -336,5 +350,85 @@ class Sale extends CI_Controller {
 			
             $this->load->view('partydetailwisereport',['returnData'=>$returnData]);
         }
+    }
+    public function saleFromTOReport()
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        $this->load->view('saleFromTo');
+
+    }
+
+    public function reportsaleFromTo()
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        
+       $startdate=$this->input->post('startdate');
+       $enddate=$this->input->post('enddate');
+       if($startdate!=$enddate)
+       {
+            if(($this->input->post('clientid'))!='')
+            {
+                $clientname=$this->input->post('tempclientname');
+                $clientid=$this->input->post('clientid');
+                $result=$this->sale->reportSaleFromTo($startdate, $enddate,$clientid);
+            }
+            else{
+                $clientname='';
+                $clientid='';
+                $result=$this->sale->reportSaleFromTo($startdate, $enddate,$clientid);
+            }
+            if(isset($_SESSION['error'])){
+                unset($_SESSION['error']);
+            }
+            $returnData =  ['clientname' => $clientname,'startdate'=>$startdate,'enddate'=>$enddate,'result'=>$result];
+           // print_r($returnData);
+            $this->load->view('saleFromTo',['returnData'=>$returnData]);
+        }
+        else{
+            $this->session->set_flashdata('error', 'Please select from and to Date');
+            $this->load->view('saleFromTo');
+        }
+    }
+    public function billdetail($client_id,$billno,$billdate)
+    {    
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        $dataresult=$this->sale->billdetail($client_id,$billno,$billdate);
+        $this->output->set_content_type('application/json');
+        echo json_encode(array('status'  => $dataresult)); 
+        //$this->load->view('saleFromTo',$dataresult);
+
+    }
+    public function missingbill()
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        $result=$this->sale->billNumberMissing();
+        $this->load->view('missingbillno',['result'=>$result]);
+    }
+
+    public function compared()
+    {
+        if(!$this->session->userdata('logged_in'))
+        {
+            $this->session->set_flashdata('msg', 'Username / Password Invalid');
+            redirect(base_url().'login');  
+        }
+        $result=$this->sale->stocksalecompared();
+        $this->load->view('stockcompared',$result);
     }
 }

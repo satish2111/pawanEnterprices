@@ -81,20 +81,22 @@ include('header.php');?>
         </div>
         <div class="col-md-12 text-center">
             <button class="btn btn-success" id='search' title='Get Data'>Search</button>
-            <a href="<?php echo base_url().'sale/report' ?>" class="btn btn-danger" title='Final Cancel'>Cancel</a>
+            <a href="<?php echo base_url().'sale/Details' ?>" class="btn btn-danger" title='Final Cancel'>Cancel</a>
+            <?php if(isset($returnData['data'])){?>
             <button class="btn btn-primary" onclick='printContent(mytable)' id='print'>Print</button>
+            <?php } ?>
 
         </div>
     </form>
     <div class="table-responsive mt-3 blocks" id='mytable'>
-    <?php if(isset($returnData['client'])){?> 
+        <?php if(isset($returnData['client'])){?>
         <h4>Client Name : <?php echo $returnData['client']; ?></h4>
-        <h4>From : <?php echo  $returnData['startdate']; ?> To : <?php echo  $returnData['enddate']; ?></h4>
+        <h4>From : <?php echo  (date('d-m-Y',strtotime($returnData['startdate']))); ?> To : <?php echo  (date('d-m-Y',strtotime($returnData['enddate']))); ?></h4>
         <table class="table table-bordred table-striped block-col">
             <thead>
                 <th>#</th>
                 <th>Bill No</th>
-                <th>Name</th>
+                <!-- <th>Name</th> -->
                 <th>BIll Amount</th>
                 <th>Paid Date</th>
                 <th>Amount</th>
@@ -102,10 +104,11 @@ include('header.php');?>
                 <th>Remark</th>
             </thead>
             <tbody>
-
+            
                 <?php  
                         $Amttotal=null;
                         $cnt=1;
+                        if(isset($returnData['data'])){
                         $billno=$returnData['data'][0]->Fk_Sale_id;
                         $Outstanding=null;
                         $prvAmt=null;
@@ -119,8 +122,6 @@ include('header.php');?>
                                 }
                                 else {
                                      $Outstanding=$prvAmt-$rw->Amt;
-                                    
-
                                      $prvAmt=$Outstanding;
                                 }
                             }
@@ -133,25 +134,30 @@ include('header.php');?>
                 <tr id='<?php echo $rw->Fk_Sale_id;?>'>
                     <td><?php echo $cnt;?></td>
                     <td><?php echo $rw->Fk_Sale_id;?></td>
-                    <td><?php echo $rw->Name; ?> </td>
+                    <!-- <td><?php echo $rw->Name; ?> </td> -->
                     <td><?php echo $rw->TotalAmt; ?> </td>
                     <td><?php echo (date('d-m-Y',strtotime($rw->DateOfPaid)));?></td>
                     <td><?php echo $rw->Amt;?></td>
                     <td><?php echo $Outstanding;?></td>
                     <td><?php echo $rw->Remark;?></td>
-                    
                 </tr>
                 <?php 
-                    
                     $cnt++; }?>
                 <tr>
-                    <td colspan='6'>
+                    <td colspan='5'>
                         <h4 style='float:right;color:green; '><?php echo number_format($Amttotal,2)?>
                         </h4>
                     </td>
                     <td colspan='2'></td>
-                    
                 </tr>
+                <?php }
+                    else{
+                        ?>
+                        <tr>
+                            <td colspan="12" style="color:red">Payment Records Not Found</td>
+                        </tr>
+                        <?php
+                    }?>
             </tbody>
         </table>
         <?php } 
@@ -216,6 +222,7 @@ $(document).ready(function() {
     });
     //client vaild from backend end//
 });
+
 
 function printContent(el) {
     var restorepage = document.body.innerHTML;
