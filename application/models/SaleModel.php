@@ -268,21 +268,32 @@ public function insert($saletable,$totalbill)
 			
 		}
 	}
+
+	
 		public function reportprint($startdate, $enddate,$paidornot)
 		{
+			//$returnArray = array();
+			
 			if($paidornot=='Paid')
 			{
-				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,if(OutstandingAmt<=0,TotalAmt,OutstandingAmt) as OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where PaidAmt!='0.00' and TotalAmt!=PaidAmt and  Billdate BETWEEN '".$startdate."' and '".$enddate."' ORDER BY FirstName asc")->result();
+				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,if(OutstandingAmt<=0,TotalAmt,OutstandingAmt) as OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where PaidAmt!='0.00' and TotalAmt!=PaidAmt and  Billdate BETWEEN '".$startdate."' and '".$enddate."' ORDER BY FirstName,Sale_id asc")->result();
 			}
 			else if ($paidornot=='Un-Paid'){
-				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,if(OutstandingAmt<=0,TotalAmt,OutstandingAmt) as OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where Billdate BETWEEN '".$startdate."' and '".$enddate."' and TotalAmt<>PaidAmt ORDER BY FirstName asc")->result();
+				$clientReport=$this->db->query("SELECT Sale_id,DATE_FORMAT(Billdate,'%d-%m-%Y')as Billdate,DATE_FORMAT(createdate,'%d-%m-%Y') as DueDate,TotalAmt,PaidAmt,if(OutstandingAmt<=0,TotalAmt,OutstandingAmt) as OutstandingAmt,CONCAT(c.FirstName,' ',c.LastName)as Name, c.Address,c.client_id FROM `tblmastersale` s join tblclient c on c.client_id=s.client_id where Billdate BETWEEN '".$startdate."' and '".$enddate."' and TotalAmt<>PaidAmt ORDER BY FirstName,Sale_id asc")->result();
 			}
 			if(isset($clientReport))
 			{
+				// $returnArray = $clientReport;
+				
+				// usort($returnArray, 'name_compare_sort');
+				// $newarray = $returnArray;
+				// usort($returnArray, 'date_compare_sort');
 				$returnData = (object) ['status' => 'success','clientreport'=>$clientReport];
 			}
 			return $returnData;
 		}
+
+		
 
 		public function  reportsalepurchase($startdate, $enddate)
 		{
@@ -532,51 +543,103 @@ public function insert($saletable,$totalbill)
 		public function stocksalecompared()
 		{
 			$productandqty=$this->db->select('DISTINCT(ProductName), SUM(Qty) as purchaseQty')
-							//->where('ProductName','7562 BATTERY')
+							//->where('ProductName','BH-390 HEADPHONE')
 							->from('tblpurchase')->group_by('ProductName')
 							->ORDER_by('ProductName','asc')->get()->result_array();
-							$billNumber='';
-							$purchasebillno='';
+
+
+							$billNumber=null;
+							$purchasebillno=null;
+							
 							foreach($productandqty as $key=>$val)
 							{
-								
-								$Stockavailable[]=$this->db->select('DISTINCT(ProductName), IFNULL(SUM(Qty),0) as purchaseavailableQty')
+								$Stockavailable=$this->db->select('DISTINCT(ProductName), IFNULL(SUM(Qty),0) as purchaseavailableQty')
 								->from('tblpurchase')->group_by('ProductName')->where('ProductName',$val['ProductName'])->where('Status','A')
-								->ORDER_by('ProductName','asc')->get()->result();
+								->ORDER_by('ProductName','asc')->get()->result_array();
+								
+								if(!empty($Stockavailable))
+								{
+									if($Stockavailable[0]['purchaseavailableQty']>0)
+									{
+										$productandqty[$key]['PurchaseAvailableQty']=$Stockavailable[0]['purchaseavailableQty'];
+									}
+									else if($Stockavailable[0]['purchaseavailableQty']<=0){
+										$productandqty[$key]['PurchaseAvailableQty']=0;
+									}
+								}
+								else{
+									$productandqty[$key]['PurchaseAvailableQty']=0;
+								}
 
-								$saletotal[]= $this->db->select('DISTINCT(ProductName),IFNULL(sum(Qty),0) as TotalSale')->
+								$saletotal= $this->db->select('DISTINCT(ProductName),IFNULL(sum(Qty),0) as TotalSale')->
 								from('tblsale')->group_by('ProductName')->where('ProductName',$val['ProductName'])
-								->ORDER_by('ProductName','asc')->get()->result();
+								->ORDER_by('ProductName','asc')->get()->result_array();
+
+								if(!empty($saletotal))
+								{
+									if($saletotal[0]['TotalSale']>0)
+									{
+										$productandqty[$key]['TotalSale']=$saletotal[0]['TotalSale'];
+									}
+									else if($saletotal[0]['TotalSale']<=0)
+									{
+										$productandqty[$key]['TotalSale']=0;
+									}
+								}
+								else
+								{
+									$productandqty[$key]['TotalSale']=0;
+								}
+							
 
 								$billnos=$this->db->select('DISTINCT IFNULL(Fk_Sale_id, 0) as Fk_Sale_id ')->from('tblsale')
 								->where('ProductName',$val['ProductName'])->get()->result_array();
 
-								foreach($billnos as $key=>$values)
+								foreach($billnos as $keyvalue=>$values)
 								{
 									if($values!='')
 									{
-										$billNumber.=$values['Fk_Sale_id'].',';
+										$billNumber.=$values['Fk_Sale_id'].' , ';
 									}
 								}
-								$saleBillNoAsPerProduct[$val['ProductName']]=trim($billNumber,',');
+								
+								//$productandqty[$key]['saleBillNo']=trim($billNumber,',');
+								if($billNumber!=null)
+								{
+									$productandqty[$key]['SaleBillNo']=trim($billNumber,' , ');
+								}
+								else if($billNumber==null)
+								{
+									$productandqty[$key]['SaleBillNo']=0;
+								}
+
 								$billNumber='';
 
 								$purchasbill=$this->db->select('DISTINCT IFNULL(Billno, 0) as Billno')->from('tblpurchase')
 								->where('ProductName',$val['ProductName'])->get()->result_array();
 
-								foreach($purchasbill as $key=>$purBill)
+
+								foreach($purchasbill as $keyitem=>$purBill)
 								{
-									$purchasebillno.=$purBill['Billno'].',';
+									$purchasebillno.=$purBill['Billno'].' , ';
 								}
-								$purchaseBillNoAsPerProduct[$val['ProductName']]=trim($purchasebillno,',');
+								//$purchaseBillNoAsPerProduct[$val['ProductName']]=trim($purchasebillno,',');
+								if($purchasebillno!=null)
+								{
+									$productandqty[$key]['PurchaseBillNo']=trim($purchasebillno,' , ');
+								}
+								else if($purchasebillno==null)
+								{
+									$productandqty[$key]['PurchaseBillNo']=0;
+								}
 								$purchasebillno='';
 
 							}
-							echo'<pre>';
-							$fulldata=(object)['PurchaseQty' => $productandqty,'PurchaseAvailable'=>$Stockavailable,'Sale'=>$saletotal,'saleBillNoAsPerProduct'=>$saleBillNoAsPerProduct,'purchaseBillNoAsPerProduct'=>$purchaseBillNoAsPerProduct];
-							print_r($fulldata);
-							//$merge = array_merge($productandqty,$Stockavailable,$saletotal,$saleBillNoAsPerProduct,$purchaseBillNoAsPerProduct,$purchaseBillNoAsPerProduct);
-							//print_r($merge);
+							
+							//$fulldata=(object)['PurchaseQty' => $productandqty,'PurchaseAvailable'=>$Stockavailable,'Sale'=>$saletotal,'saleBillNoAsPerProduct'=>$saleBillNoAsPerProduct,'purchaseBillNoAsPerProduct'=>$purchaseBillNoAsPerProduct];
+							return $productandqty;
+							
+							
 			
 
 		}

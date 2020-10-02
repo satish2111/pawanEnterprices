@@ -185,10 +185,10 @@ table {
                 </span>
             </h4>
             <h4 class='text-center'>
-                <span class='red'> Total Purchase :- </span>
+                <span class='red'> Total Sale :- </span>
                 <span>
                     <?php echo $totalpurchase; ?></span>
-                <span class='red'> Total Paid :-</span>
+                <span class='red'> Total Payment Get Form Party :-</span>
                 <span><?php echo $totalpurchasePaid; ?></span>
             </h4>
             <?php } ?>

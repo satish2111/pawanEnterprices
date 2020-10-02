@@ -429,6 +429,6 @@ class Sale extends CI_Controller {
             redirect(base_url().'login');  
         }
         $result=$this->sale->stocksalecompared();
-        $this->load->view('stockcompared',$result);
+        $this->load->view('stockcompared',['result'=>$result]);
     }
 }

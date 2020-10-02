@@ -150,6 +150,7 @@ include('header.php');?>
             </tbody>
 
         </table>
+        <h2 style='float:right'> Total Outstanding :- <span id='finalout'></span></h2>
     </div>
     <div class="pageloader" style='display: none;' id='pageloader'></div>
 
@@ -271,7 +272,7 @@ $(document).ready(function() {
             document.getElementById("pageloader").style.display = "block";
             document.getElementById("print").style.display = "inline-block";
             document.getElementById("amt").style.display = "none"; 
-            
+            var finalOutAmt=0;
             var x = document.getElementById("table1").rows.length;
             if (x != '0') {
                 // $("#table1").empty();
@@ -317,7 +318,11 @@ $(document).ready(function() {
                                 })
                             })
                         }, {})
-                        for (var [Name, bill] of Object.entries(data)) {
+                        const sortable = Object.fromEntries(
+                            Object.entries(data).sort(([,a],[,b]) => a-b)
+                        );
+                        console.log((sortable));
+                        for (var [Name, bill] of Object.entries(sortable)) {
                             $("#table1 tbody").append(`<tr><td colspan= 6><b>Party Name :- ${Name}</td></tr>
                                                     <tr><td>Bill No</td>
                                                     <td>Bill Date</td>
@@ -328,6 +333,7 @@ $(document).ready(function() {
                             var billTotalAmt = 0;
                             var billTotalPaidAmt = 0;
                             var billTotalOutAmt = 0;
+                            
                             for (var singleBill of bill) {
                                 $("#table1 tbody").append(
                                     `<tr> <td> ${singleBill.Sale_id} </td>,
@@ -340,6 +346,7 @@ $(document).ready(function() {
                                 billTotalAmt += parseFloat(singleBill.TotalAmt);
                                 billTotalPaidAmt += parseFloat(singleBill.PaidAmt);
                                 billTotalOutAmt += parseFloat(singleBill.OutstandingAmt);
+                              
                             }
                             $("#table1 tbody").append(
                                 `<tr> <td colspan = 2 > <b style='float: right;'>Total</b> </td>,
@@ -348,7 +355,10 @@ $(document).ready(function() {
                                  <td> <b> ${billTotalPaidAmt.toFixed(2)}</b> </td>,
                                  <td> <b>${billTotalOutAmt.toFixed(2)}</b> </td> </tr>
                             `);
+                            finalOutAmt+=billTotalOutAmt;
+                                //console.log(billTotalOutAmt,finalOutAmt);
                         }
+                        document.getElementById("finalout").innerHTML=finalOutAmt.toFixed(2);
                         document.getElementById("mytable").style.display = "block";
                     } else {
                         Swal.fire('Warning', 'Something Wrong', 'warning');
