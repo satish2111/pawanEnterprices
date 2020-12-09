@@ -58,13 +58,16 @@ include('header.php'); ?>
                         <?php  
                         $Amttotal=null;
                         $cnt=1;
-                        foreach($result as $key => $rw) {  $Amttotal+= ($rw->Total); ?>
+                        //print_r($result[0]->ProductName);
+                        //exit();
+                        foreach($result as $key => $rw) 
+                        { $Amttotal+= ($rw['Total']); ?>
                         <tr>
                             <td><?php echo $cnt;?></td>
-                            <td><?php echo $rw->ProductName; ?> </td>
-                            <td><?php echo $rw->Qty;?></td>
-                            <td><?php echo $rw->MRP;?></td>
-                            <td><?php echo $rw->Total;?></td>
+                            <td><?php echo $rw['ProductName']; ?> </td>
+                            <td><?php echo $rw['Qty'];?></td>
+                            <td><?php echo $rw['MRP'];?></td>
+                            <td><?php echo $rw['Total'];?></td>
                         </tr>
                         <?php 
                     

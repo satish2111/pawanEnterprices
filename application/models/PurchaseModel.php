@@ -334,11 +334,36 @@ class PurchaseModel extends CI_Model {
 
 	public function currentStock()
 	{
-		//from  where  GROUP BY  ORDER BY  
-		$Finalresport=$this->db->select('DISTINCT (ProductName),SUM(Qty)as Qty,MRP,(SUM(Qty)*MRP) Total')
-						 ->where('Status','A')->from('tblpurchase')
-						 ->group_by('ProductName')->order_by('Qty','DESC')->order_by('ProductName','ASC')->get()->result();
-						 return $Finalresport;
+		//->where('ProductName','HP-356 POWERBANK')
+		$allproduct= $this->db->select('DISTINCT (ProductName) as ProductName ')->from('tblpurchase')->get()->result_array();
+		foreach($allproduct as $key=>$val)
+		{
+			$halfresport=$this->db->select('DISTINCT (ProductName),IFNULL(SUM(Qty),0)as Qty,MRP,(SUM(Qty)*MRP) Total')
+			->where('Status','A')->where('ProductName',$val['ProductName'])->from('tblpurchase')
+			->group_by('ProductName')->order_by('Qty','DESC')->order_by('ProductName','ASC')->get()->result_array();
+			if(!empty($halfresport))
+				{
+					if($halfresport[0]['Qty']>0)
+					{
+						$allproduct[$key]['Qty']=$halfresport[0]['Qty'];
+						$allproduct[$key]['MRP']=$halfresport[0]['MRP'];
+						$allproduct[$key]['Total']=$halfresport[0]['Total'];
+			
+					}
+				}
+				else{
+					$allproduct[$key]['Qty']='0';
+					$allproduct[$key]['MRP']='0';
+					$allproduct[$key]['Total']='0';
+				}
+			
+		}
+		usort($allproduct, function($a, $b) {
+			return [$b['Qty'],$a['MRP'],$a['Total']]
+				   <=>
+				   [$a['Qty'],$b['MRP'],$b['Total']];
+		});
+		return $allproduct;
 
 	}
 

@@ -155,12 +155,11 @@ public function checkprodutname($productName)
 				return 'failed';
 			}
 }
-public function insert($saletable,$totalbill)
-{
-	
-	for ($x=0; $x <count($saletable) ; $x++)
+	public function insert($saletable,$totalbill)
+	{
+		for ($x=0; $x <count($saletable) ; $x++)
 		{
-		$saleinsert[]=array(
+			$saleinsert[]=array(
 			'ProductName'=>$saletable[$x]['ProductName'],
 			'Qty'=>$saletable[$x]['Qty'],
 			'Free'=>$saletable[$x]['Free'],
@@ -168,41 +167,40 @@ public function insert($saletable,$totalbill)
 			'productwisegross'=>$saletable[$x]['productwisegross'],
 		);
 		}
-	try{
+		try{
 			$firstinsert=$this->db->insert('tblmastersale',$totalbill[0]);
-			
-			if($firstinsert)
+			$query = $this->db->query("select max(Sale_id) from  tblmastersale where Billdate='".$totalbill[0]['BillDate']."' and client_id='".$totalbill[0]['client_id']."' ");
+			$row = $query->row_array();
+			$maxid= $row['max(Sale_id)'];
+			$tempsrno=1;
+			if($maxid)
 			{
-				
-				$query = $this->db->query("select max(Sale_id) from  tblmastersale where Billdate='".$totalbill[0]['BillDate']."' and client_id='".$totalbill[0]['client_id']."' ");
-				$row = $query->row_array();
-				$maxid= $row['max(Sale_id)'];
-				if($maxid)
-				{
-					$tempsrno=1;
 					for ($i=0; $i < count($saleinsert); $i++)
 					{
 							$saleinsert[$i]['Fk_Sale_id']=$maxid;
 							$saleinsert[$i]['Srno']=$tempsrno;
 							$tempsrno++;
-							$finaldone=$this->db->insert('tblsale',$saleinsert[$i]);
 							$forupdatesstatus=$saletable[$i]['Qty']+$saletable[$i]['Free'];
 							
 							for ($x=0; $x <$forupdatesstatus ; $x++)
 							{
 								$productnames=$saleinsert[$i]['ProductName'];
 								$billno=$this->db->select('MIN(Billno)as Billno')
-								->where('ProductName',$productnames)
-								->where('STATUS',"A")
-								->get('tblpurchase')->row_array();
+												 ->where('ProductName',$productnames)
+												 ->where('STATUS',"A")
+												 ->get('tblpurchase')->row_array();
 								$tempbillno=$billno['Billno'];
 								$selectstock=$this->db->query("SELECT min(srno)as srno from tblpurchase where ProductName='".$productnames."' and STATUS='A' and Billno='".$tempbillno."' ");
 								$rows = $selectstock->row_array();
 								$fromarray=array();
 								$fromarray['STATUS']='S';
 								$fromarray['SaleBillNo']=$maxid;
-								try{
-								$this->db->where('Billno',$tempbillno)->where('SrNo',$rows['srno'])->where('ProductName',$saleinsert[$i]['ProductName'])->update('tblpurchase',$fromarray);
+								try
+								{
+									$this->db->where('Billno',$tempbillno)
+											 ->where('SrNo',$rows['srno'])
+											 ->where('ProductName',$saleinsert[$i]['ProductName'])
+											 ->update('tblpurchase',$fromarray);
 								}
 								catch(Exception $t)
 								{
@@ -210,18 +208,17 @@ public function insert($saletable,$totalbill)
 									return 'failed';
 								}
 							}
+							
+							$finaldone=$this->db->insert('tblsale',$saleinsert[$i]);
+							return 'success';
 					}
-				}
-				else{
-					return 'failed';
-				}
-				return 'success';
 			}
 		}
-		catch(Exception $e){
-				return 'failed';
-			}
-}
+		catch(Exception $e)
+		{
+			return 'failed';
+		}
+	}
 	public function delete($id)
 	{
 		$sql_query=$this->db->where('Fk_Sale_id', $id) ->delete('tblsalepayment');
@@ -250,26 +247,25 @@ public function insert($saletable,$totalbill)
 		}
 	}
 
-	function billprint($billno)
-	{
-		$salemater=$this->db->query("SELECT Sale_id,client_id,TotalAmt,Billdate from tblmastersale where Sale_id='".$billno."'")->row_array();
-		if(isset($salemater))
+		function billprint($billno)
 		{
-			$userdetail=$this->db->query("SELECT CONCAT(FirstName,' ',LastName) as Party,Address FROM tblclient where client_id='".$salemater['client_id']."';")->row_array();
-			if(isset($userdetail))
-			{	
-				$billdetail=$this->db->query("SELECT ProductName,Qty,Free,mrp,productwisegross FROM `tblsale` WHERE Fk_Sale_id='".$billno."'")->result();
-				$finalbill=array($salemater,$userdetail,$billdetail);
-				return $finalbill;
+			$salemater=$this->db->query("SELECT Sale_id,client_id,TotalAmt,Billdate from tblmastersale where Sale_id='".$billno."'")->row_array();
+			if(isset($salemater))
+			{
+				$userdetail=$this->db->query("SELECT CONCAT(FirstName,' ',LastName) as Party,Address FROM tblclient where client_id='".$salemater['client_id']."';")->row_array();
+				if(isset($userdetail))
+				{	
+					$billdetail=$this->db->query("SELECT ProductName,Qty,Free,mrp,productwisegross FROM `tblsale` WHERE Fk_Sale_id='".$billno."'")->result();
+					$finalbill=array($salemater,$userdetail,$billdetail);
+					return $finalbill;
+				}
+			}
+			else{
+				return 'fail';
+				
 			}
 		}
-		else{
-			return fail;
-			
-		}
-	}
 
-	
 		public function reportprint($startdate, $enddate,$paidornot)
 		{
 			//$returnArray = array();
@@ -292,8 +288,6 @@ public function insert($saletable,$totalbill)
 			}
 			return $returnData;
 		}
-
-		
 
 		public function  reportsalepurchase($startdate, $enddate)
 		{
@@ -345,8 +339,6 @@ public function insert($saletable,$totalbill)
 
 		public function editPurchasedelete($totalbill)
 		{
-			//print_r($totalbill);
-
 			$fromarray=array();
 			$fromarray['Status']='A';
 			$fromarray['SaleBillNo']='';
@@ -397,11 +389,13 @@ public function insert($saletable,$totalbill)
 				);
 				}
 			}
+			
 			if(!empty($saleinsert))
 			{
 				$query = $this->db->query("select max(Srno) from  tblsale where Fk_Sale_id='".$saletable[0]['Fk_Sale_id']."'");
 				$row = $query->row_array();
 				$maxid= $row['max(Srno)'];
+				$maxid++;
 				if($maxid)
 				{
 					$tempsrno=$maxid;
@@ -410,34 +404,43 @@ public function insert($saletable,$totalbill)
 							$saleinsert[$i]['Fk_Sale_id']=$saletable[0]['Fk_Sale_id'];
 							$saleinsert[$i]['Srno']=$tempsrno;
 							$tempsrno++;
-							$finaldone=$this->db->insert('tblsale',$saleinsert[$i]);
-							$forupdatesstatus=$saletable[$i]['Qty']+$saletable[$i]['Free'];
+							
+							$forupdatesstatus=$saleinsert[$i]['Qty']+$saleinsert[$i]['Free'];
+							
 							for ($x=0; $x <$forupdatesstatus ; $x++)
 							{
-								$selectstock=$this->db->query("SELECT BIllno,min(srno)as srno from tblpurchase where ProductName='".$saleinsert[$i]['ProductName']."' and STATUS='A'");
+								$productnames=$saleinsert[$i]['ProductName'];
+								$billno=$this->db->select('MIN(Billno)as Billno')
+												 ->where('ProductName',$productnames)
+												 ->where('STATUS',"A")
+												 ->get('tblpurchase')->row_array();
+								$tempbillno=$billno['Billno'];
+								$selectstock=$this->db->query("SELECT min(srno)as srno from tblpurchase where ProductName='".$saleinsert[$i]['ProductName']."' and STATUS='A'  and Billno='".$tempbillno."'");
 								$rows = $selectstock->row_array();
 								$fromarray=array();
 								$fromarray['STATUS']='S';
 								$fromarray['SaleBillNo']=$saletable[0]['Fk_Sale_id'];
-								$this->db->where('Billno',$rows['BIllno']);
+								$this->db->where('Billno',$tempbillno);
 								$this->db->where('SrNo',$rows['srno']);
 								$this->db->update('tblpurchase',$fromarray);
 							}
+							$finaldone=$this->db->insert('tblsale',$saleinsert[$i]);
 						
 					}
-				}
-				$dataArray=array();
-				$dataArray['TotalAmt']=$totalbill[0]['TotalAmt'];
-				$dataArray['AddBy']=$totalbill[0]['AddBy'];
-				$this->db->where('Sale_id',$saletable[0]['Fk_Sale_id']);
-				$final=$this->db->update('tblmastersale',$dataArray);
-				if(!$final)
-				{
-					return 'fail-after-sale-Delete-not-update';
-				}
-				else
-				{
-					return 'success';
+
+					$dataArray=array();
+					$dataArray['TotalAmt']=$totalbill[0]['TotalAmt'];
+					$dataArray['AddBy']=$totalbill[0]['AddBy'];
+					$this->db->where('Sale_id',$saletable[0]['Fk_Sale_id']);
+					$final=$this->db->update('tblmastersale',$dataArray);
+					if(!$final)
+					{
+						return 'fail-after-sale-Delete-not-update';
+					}
+					else
+					{
+						return 'success';
+					}
 				}
 			}
 			else if(empty($saleinsert))
@@ -448,7 +451,6 @@ public function insert($saletable,$totalbill)
 		}
 		public function payment($paymentdetail)
 		{
-
 			$fromarray=array();
 			$fromarray['PaidAmt']=$paymentdetail['PaidAmt'];
 			$fromarray['OutstandingAmt']=$paymentdetail['OutstandingAmt'];

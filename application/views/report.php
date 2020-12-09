@@ -109,15 +109,15 @@ include('header.php');?>
                 </tr>
                 <tr>
                     <!-- <td>#</td> -->
-                    <td style='color:red;font-weight:500;'>Purchase</td>
-                    <td style='color:red;font-weight:500;'>Purchase Amount Paid</td>
+                    <td style='color:red;font-weight:500;'>Company Purchase</td>
+                    <td style='color:red;font-weight:500;'>Company DP</td>
                     <td style='color:red;font-weight:500;'>Purchase Amount Outstanding</td>
                     <td style='color:#007bff;font-weight:500;'>Current Stock (Suppler)</td>
-                    <td style='color:#007bff;font-weight:500;'>Current Stock (DP)</td>
-                    <td style='color:green; font-weight:400;'>Sale On MRP</td>
-                    <td style='color:green; font-weight:400;'>Sale On Cost</td>
-                    <td style='color:green; font-weight:400;'>Payment Get From Party  </td>
-                    <td style='color:green; font-weight:400;'>Payment Amount Outstanding From Party </td>
+                    <td style='color:#007bff;font-weight:500;'>Company stock available with DP</td>
+                    <td style='color:green; font-weight:400;'>Sale on DP</td>
+                    <td style='color:green; font-weight:400;'>Sale on company DP</td>
+                    <td style='color:green; font-weight:400;'>Payment get from party</td>
+                    <td style='color:green; font-weight:400;'>Payment amount outstanding from party</td>
                 </tr>
             <tbody id='total'>
                 <tr>

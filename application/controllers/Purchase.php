@@ -209,6 +209,7 @@ class Purchase extends CI_Controller {
                 redirect(base_url().'login');  
             }
             $result=$this->Purchase->currentStock();
+            
             //$this->load->view('stockreport');
              $this->load->view('stockreport',['result'=>$result]);
             
