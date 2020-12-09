@@ -358,9 +358,9 @@ class PurchaseModel extends CI_Model {
 				}
 			
 		}
-		usort($allproduct, function($a, $b) {
-			return [$b['Qty'],$a['MRP'],$a['Total']]<=>[$a['Qty'],$b['MRP'],$b['Total']];
-		});
+		// usort($allproduct, function($a, $b) {
+		// 	return [$b['Qty'],$a['MRP'],$a['Total']]<=>[$a['Qty'],$b['MRP'],$b['Total']];
+		// });
 		return $allproduct;
 
 	}
