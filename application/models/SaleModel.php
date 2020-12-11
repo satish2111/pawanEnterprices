@@ -173,15 +173,15 @@ public function checkprodutname($productName)
 			$row = $query->row_array();
 			$maxid= $row['max(Sale_id)'];
 			$tempsrno=1;
-			if($maxid)
-			{
+				if($maxid)
+				{
 					for ($i=0; $i < count($saleinsert); $i++)
 					{
 							$saleinsert[$i]['Fk_Sale_id']=$maxid;
 							$saleinsert[$i]['Srno']=$tempsrno;
 							$tempsrno++;
 							$forupdatesstatus=$saletable[$i]['Qty']+$saletable[$i]['Free'];
-							
+							/*status updated in purchase table*/
 							for ($x=0; $x <$forupdatesstatus ; $x++)
 							{
 								$productnames=$saleinsert[$i]['ProductName'];
@@ -190,14 +190,14 @@ public function checkprodutname($productName)
 												 ->where('STATUS',"A")
 												 ->get('tblpurchase')->row_array();
 								$tempbillno=$billno['Billno'];
-								$selectstock=$this->db->query("SELECT min(srno)as srno from tblpurchase where ProductName='".$productnames."' and STATUS='A' and Billno='".$tempbillno."' ");
+								$selectstock=$this->db->query("SELECT min(srno)as srno from tblpurchase where Billno='".$tempbillno."' and STATUS='A' and ProductName='".$productnames."'    ");
 								$rows = $selectstock->row_array();
 								$fromarray=array();
 								$fromarray['STATUS']='S';
 								$fromarray['SaleBillNo']=$maxid;
 								try
 								{
-									$this->db->where('Billno',$tempbillno)
+									$test=$this->db->where('Billno',$tempbillno)
 											 ->where('SrNo',$rows['srno'])
 											 ->where('ProductName',$saleinsert[$i]['ProductName'])
 											 ->update('tblpurchase',$fromarray);
@@ -208,11 +208,10 @@ public function checkprodutname($productName)
 									return 'failed';
 								}
 							}
-							
 							$finaldone=$this->db->insert('tblsale',$saleinsert[$i]);
-							return 'success';
 					}
-			}
+					return 'success';
+				}
 		}
 		catch(Exception $e)
 		{
